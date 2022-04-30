@@ -1,0 +1,3 @@
+ReviewBook.API/Data/Migrations/20220430144847_InitDb.cs
+ReviewBook.API/Data/Migrations/20220430144847_InitDb.Designer.cs
+ReviewBook.API/Data/Migrations/DataContextModelSnapshot.cs
