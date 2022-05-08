@@ -2,11 +2,9 @@ using ReviewBook.API.Data.Entities;
 
 namespace ReviewBook.API.DTOs
 {
-    public class UpdateAccountDTOs
+    public class UpdateInforAccountDTOs
     {
         public string UserName { get; set; }
-
-        public string Password { get; set; }
         public bool IsActive { get; set; }
 
         public string? FullName { get; set; }
@@ -20,7 +18,6 @@ namespace ReviewBook.API.DTOs
             Account acc = new Account();
             acc.ID = ID;
             acc.UserName = this.UserName;
-            acc.Password = this.Password;
             acc.IsActive = this.IsActive;
             acc.FullName = this.FullName;
             acc.Birthday = this.Birthday;

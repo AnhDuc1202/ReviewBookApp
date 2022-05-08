@@ -35,10 +35,17 @@ namespace ReviewBook.API.Controllers
             return Ok(_AccountService.CreateAccount(value.toAccountEntity()));
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<Account> Put(int id, [FromBody] UpdateAccountDTOs value)
+        [HttpPut("/password/{id}")]
+        public ActionResult<Account> Put(int id, [FromBody] UpdatePasswordAccountDTOs value)
         {
-            var kq = _AccountService.UpdateAccount(value.toAccountEntity(id));
+            var kq = _AccountService.UpdatePasswordAccount(value.toAccountEntity(id));
+            if (kq == null) return BadRequest();
+            return Ok(kq);
+        }
+        [HttpPut("/information/{id}")]
+        public ActionResult<Account> Put(int id, [FromBody] UpdateInforAccountDTOs value)
+        {
+            var kq = _AccountService.UpdateInforAccount(value.toAccountEntity(id));
             if (kq == null) return BadRequest();
             return Ok(kq);
         }

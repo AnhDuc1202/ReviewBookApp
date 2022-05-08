@@ -40,7 +40,7 @@ namespace ReviewBook.API.Services
             return _context.Accounts.Include(a => a.role).ToList();
         }
 
-        public Account? UpdateAccount(Account account)
+        public Account? UpdateInforAccount(Account account)
         {
             var currentAcc = GetAccountById(account.ID);
             if (currentAcc == null) return null;
@@ -49,9 +49,17 @@ namespace ReviewBook.API.Services
             currentAcc.FullName = account.FullName;
             currentAcc.ID_Role = account.ID_Role;
             currentAcc.IsActive = account.IsActive;
-            currentAcc.Password = account.Password;
             currentAcc.Picture = account.Picture;
             currentAcc.UserName = account.UserName;
+            _context.Accounts.Update(currentAcc);
+            _context.SaveChanges();
+            return currentAcc;
+        }
+        public Account? UpdatePasswordAccount(Account account)
+        {
+            var currentAcc = GetAccountById(account.ID);
+            if (currentAcc == null) return null;
+            currentAcc.Password = account.Password;
             _context.Accounts.Update(currentAcc);
             _context.SaveChanges();
             return currentAcc;

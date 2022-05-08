@@ -2026,11 +2026,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\vs_code\\ReviewBookBE\\ReviewBook.API\\ReviewBook.API.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\vs_code\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
       "projectName": "ReviewBook.API",
-      "projectPath": "C:\\Users\\Admin\\vs_code\\ReviewBookBE\\ReviewBook.API\\ReviewBook.API.csproj",
+      "projectPath": "C:\\Users\\Admin\\vs_code\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\vs_code\\ReviewBookBE\\ReviewBook.API\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\vs_code\\ReviewBookApp\\ReviewBook.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
