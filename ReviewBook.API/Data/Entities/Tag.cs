@@ -17,7 +17,7 @@ namespace ReviewBook.API.Data.Entities
         [StringLength(256)]
         public string Name { get; set; }
         [StringLength(2048)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public virtual List<Book_Tag> Books { get; set; }
         public virtual List<Propose_Tag> Proposes { get; set; }
     }

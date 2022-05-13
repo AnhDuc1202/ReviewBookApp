@@ -10,5 +10,8 @@ namespace ReviewBook.API.Services
         public Account? UpdatePasswordAccount(Account account);
         public Account? UpdateInforAccount(Account account);
         public bool DeleteAccount(int IdAcc);
+
+        public Follow CreateFollow(Follow follow);
+        public bool DeleteFollow(int ID);
     }
 }

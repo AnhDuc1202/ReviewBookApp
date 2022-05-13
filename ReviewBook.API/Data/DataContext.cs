@@ -11,7 +11,12 @@ namespace ReviewBook.API.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<MyBooks> myBooks { get; set; }
+        public DbSet<Tag> Tags { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<Propose> Proposes { get; set; }
+        public DbSet<Book_Tag> BookTags { get; set; }
+        public DbSet<Propose_Tag> ProposeTags { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
