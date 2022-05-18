@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ReviewBook.API.Data.Entities;
+using ReviewBook.API.DTOs;
 using ReviewBook.API.Models;
 
 namespace ReviewBook.API.Services
@@ -16,6 +17,14 @@ namespace ReviewBook.API.Services
         // IEnumerable<User> GetAll();
         Account GetById(int id);
 
+        String UserRegisterAccount(UserRegisterDTOs user);
+
         Account EditAccount(Account account);
+
+        List<UserReadReviewDTOs> readReview(int idBook);
+
+        Review writeReview(UserWriteReviewDTOs review);
+
+        List<Book> searchForBookOrAuthor(String bookOrAuthor);
     }
 }

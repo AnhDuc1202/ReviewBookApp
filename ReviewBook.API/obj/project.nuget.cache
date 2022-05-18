@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "vLAwuBfRiXKj7PYZGXo2N9MjJaFbSHuqMd74gKa0p7AbE88qTJHqUb/bN4ZGKVhw8q4KUCB3EKJO5DeUF+wJlA==",
+  "dgSpecHash": "XLQ/I3ghLmrDt1oWOj3hOENBoWghajZ+WKuOsvb7eqaRXd1jEMELu4K/mFnulOvT9+D6c2f8RA35Kr5m97YkIw==",
   "success": true,
   "projectFilePath": "G:\\study_online\\SOA\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\thong\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\thong\\.nuget\\packages\\microsoft.aspnetcore.authentication.google\\6.0.5\\microsoft.aspnetcore.authentication.google.6.0.5.nupkg.sha512",
     "C:\\Users\\thong\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\thong\\.nuget\\packages\\microsoft.data.sqlclient\\2.1.4\\microsoft.data.sqlclient.2.1.4.nupkg.sha512",
     "C:\\Users\\thong\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\2.1.1\\microsoft.data.sqlclient.sni.runtime.2.1.1.nupkg.sha512",

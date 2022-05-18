@@ -120,3 +120,4 @@ G:\study_online\SOA\ReviewBookApp\ReviewBook.API\obj\Debug\net6.0\scopedcss\bund
 G:\study_online\SOA\ReviewBookApp\ReviewBook.API\obj\Debug\net6.0\ReviewBook.API.csproj.CopyComplete
 G:\study_online\SOA\ReviewBookApp\ReviewBook.API\obj\Debug\net6.0\ReviewBook.API.genruntimeconfig.cache
 G:\study_online\SOA\ReviewBookApp\ReviewBook.API\obj\Debug\net6.0\ref\ReviewBook.API.dll
+G:\study_online\SOA\ReviewBookApp\ReviewBook.API\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.Google.dll

@@ -7,6 +7,7 @@ using ReviewBook.API.DTOs;
 using ReviewBook.API.Data.Entities;
 using ReviewBook.API.Services;
 using ReviewBook.API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ReviewBook.API.Controllers
 {
@@ -24,7 +25,7 @@ namespace ReviewBook.API.Controllers
         [HttpPost("Register")]
         public ActionResult<Account> Register([FromForm] UserRegisterDTOs value)
         {
-            return Ok(this.userService.CreateAccount(value.toAccountEntity()));
+            return Ok(this.userService.UserRegisterAccount(value));
         }
 
         [HttpPut("Edit/{id}")]
@@ -35,7 +36,8 @@ namespace ReviewBook.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("authenticate")]
+        [HttpPost("Login")]
+        
         public IActionResult Authenticate([FromForm] AuthenticateRequest model)
         {
             var response = this.userService.Authenticate(model);
@@ -46,5 +48,19 @@ namespace ReviewBook.API.Controllers
             return Ok(response);
         }
 
+        [HttpPost("ReadReviews")]
+        public IActionResult ReadReviews([FromForm] int idBook){
+            return Ok(this.userService.readReview(idBook));
+        }
+
+        [HttpPost("WriteReview")]
+        public IActionResult WriteReview([FromForm] UserWriteReviewDTOs review){
+            return Ok(this.userService.writeReview(review));
+        }
+
+        [HttpPost("Search")]
+        public IActionResult Search([FromForm] String bookOrAuthor){
+            return Ok(this.userService.searchForBookOrAuthor(bookOrAuthor));
+        }
     }
 }

@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using ReviewBook.API.DTOs;
 
 namespace ReviewBook.API.Services
 {
@@ -51,9 +52,26 @@ namespace ReviewBook.API.Services
             return account;
         }
 
+        public String UserRegisterAccount(UserRegisterDTOs user){
+            Account exits = this.context.Accounts.FirstOrDefault(a => a.UserName == user.UserName);
+            if(exits != null)
+                return "This user name is already registered!";
+            else{
+                if(user.Password == user.ConfirmPassword){
+                    Account result = new Account();
+                    result.UserName = user.UserName;
+                    result.Password = user.Password;
+                    CreateAccount(result);
+                    return "Register successfully!";
+                }
+                else
+                    return "Password and it's confirm are not the same!";
+            }
+        }
+
         public Account GetById(int id)
         {
-           return this.context.Accounts.FirstOrDefault(x => x.ID == id);
+            return this.context.Accounts.FirstOrDefault(x => x.ID == id);
         }
 
         public Account? GetAccountById(int IdAcc)
@@ -61,9 +79,10 @@ namespace ReviewBook.API.Services
             return this.context.Accounts.Include(a => a.role).FirstOrDefault(a => a.ID == IdAcc);
         }
 
-        public Account? EditAccount(Account account){
+        public Account? EditAccount(Account account)
+        {
             var currentAccount = GetAccountById(account.ID);
-            if(currentAccount == null)
+            if (currentAccount == null)
                 return null;
             currentAccount.Address = account.Address;
             currentAccount.Birthday = account.Birthday;
@@ -74,13 +93,8 @@ namespace ReviewBook.API.Services
             this.context.Accounts.Update(currentAccount);
             this.context.SaveChanges();
             return currentAccount;
-            
-        }
 
-        // public Account FindByNameAndPass(Account account)
-        // {
-        //     return this.context.Accounts.Include(a => a.role).FirstOrDefault(a => a.UserName == account.UserName && a.Password == account.Password);
-        // }
+        }
         private string generateJwtToken(Account user)
         {
             // generate token that is valid for 7 days
@@ -94,6 +108,44 @@ namespace ReviewBook.API.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public List<UserReadReviewDTOs> readReview(int idBook)
+        {
+            List<UserReadReviewDTOs> list = new List<UserReadReviewDTOs>();
+            List<Review> reviews = this.context.Reviews.Where(r => r.ID_Book == idBook).ToList();
+            foreach (Review review in reviews)
+            {
+                UserReadReviewDTOs result = new UserReadReviewDTOs();
+                String UserName = GetAccountById(review.ID_Acc).UserName;
+                result.UserName = UserName;
+                result.Id = review.Id;
+                result.ID_Acc = review.ID_Acc;
+                result.ID_Book = review.ID_Book;
+                result.Content = review.Content;
+                result.Date = review.Date;
+                result.Rate = review.Rate;
+                list.Add(result);
+            }
+            return list;
+        }
+
+        public Review writeReview(UserWriteReviewDTOs review)
+        {
+            Review result = new Review();
+            result.ID_Acc = review.ID_Acc;
+            result.ID_Book = review.ID_Book;
+            result.Content = review.Content;
+            result.Date = review.Date;
+            result.Rate = review.Rate;
+            this.context.Reviews.Add(result);
+            this.context.SaveChanges();
+            return result;
+        }
+
+        public List<Book> searchForBookOrAuthor(String bookOrAuthor){
+            List<Book> result = this.context.Books.Where(b => b.Name == bookOrAuthor || this.context.Authors.FirstOrDefault(a => a.Id == b.ID_Aut).Name == bookOrAuthor).ToList();
+            return result;
         }
     }
 }

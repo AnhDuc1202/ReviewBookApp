@@ -4,6 +4,7 @@ using ReviewBook.API.Helpers;
 using ReviewBook.API.Services;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["562637210221-395c63i7l1n0e22hd9p43g71qopqcrvm.apps.googleusercontent.com"];
+        googleOptions.ClientSecret = builder.Configuration["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"];
+    });
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<DataContext>(options =>
@@ -60,14 +67,3 @@ app.MapControllers();
 
 app.Run();
 
-
-// namespace ReviewBook.API
-// {
-//     public class Program
-//     {
-//        public void ConfigureServices(IServiceCollection services)
-//         {
-//             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-//         }
-//     }
-// }
