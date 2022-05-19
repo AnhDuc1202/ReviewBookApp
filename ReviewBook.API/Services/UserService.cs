@@ -102,7 +102,10 @@ namespace ReviewBook.API.Services
             var key = Encoding.ASCII.GetBytes("this is my custom Secret key for authentication");
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.ID.ToString()) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("Id", user.ID.ToString()),
+                                                     new Claim("Username", user.UserName.ToString()),
+                                                     new Claim("Password", user.Password.ToString()),       
+                                                    }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

@@ -23,13 +23,13 @@ namespace ReviewBook.API.Controllers
         }
 
         [HttpPost("Register")]
-        public ActionResult<Account> Register([FromForm] UserRegisterDTOs value)
+        public ActionResult<Account> Register([FromBody] UserRegisterDTOs value)
         {
             return Ok(this.userService.UserRegisterAccount(value));
         }
 
         [HttpPut("Edit/{id}")]
-        public ActionResult Edit([FromForm] UserAccountUpdateDtOs value, int id){
+        public ActionResult Edit([FromBody] UserAccountUpdateDtOs value, int id){
             var result = this.userService.EditAccount(value.toAccountEntity());
             if(result == null)
                 return BadRequest();
@@ -38,7 +38,7 @@ namespace ReviewBook.API.Controllers
 
         [HttpPost("Login")]
         
-        public IActionResult Authenticate([FromForm] AuthenticateRequest model)
+        public IActionResult Authenticate([FromBody] AuthenticateRequest model)
         {
             var response = this.userService.Authenticate(model);
 
@@ -49,17 +49,17 @@ namespace ReviewBook.API.Controllers
         }
 
         [HttpPost("ReadReviews")]
-        public IActionResult ReadReviews([FromForm] int idBook){
+        public IActionResult ReadReviews([FromBody] int idBook){
             return Ok(this.userService.readReview(idBook));
         }
 
         [HttpPost("WriteReview")]
-        public IActionResult WriteReview([FromForm] UserWriteReviewDTOs review){
+        public IActionResult WriteReview([FromBody] UserWriteReviewDTOs review){
             return Ok(this.userService.writeReview(review));
         }
 
         [HttpPost("Search")]
-        public IActionResult Search([FromForm] String bookOrAuthor){
+        public IActionResult Search([FromBody] String bookOrAuthor){
             return Ok(this.userService.searchForBookOrAuthor(bookOrAuthor));
         }
     }
