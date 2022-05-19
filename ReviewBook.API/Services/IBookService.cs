@@ -17,10 +17,14 @@ namespace ReviewBook.API.Services
         public Propose? UpdatePropose(Propose propose);
         public bool DeletePropose(int ID);
 
-        public List<Book_Tag> GetAllBookTags();
+        public Book_Tag CreateBookTag(Book_Tag book_Tag);
+        public List<Book_Tag> GetAllBookTagsByIdBook(int ID);
         public bool DeleteBookTag(int ID);
 
-        public List<Propose_Tag> GetAllProposeTags();
+        public Propose_Tag CreateProposeTag(Propose_Tag propose_Tag);
+
+        public List<Propose_Tag> GetAllProposeTagsByIdProppose(int ID);
         public bool DeleteProposeTag(int ID);
+
     }
 }
