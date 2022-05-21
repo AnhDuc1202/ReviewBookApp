@@ -26,5 +26,9 @@ namespace ReviewBook.API.Services
         Review writeReview(UserWriteReviewDTOs review);
 
         List<Book> searchForBookOrAuthor(String bookOrAuthor);
+
+        UserPropose_TagDTOs proposeTag(UserPropose_TagDTOs tag);
+
+        UserProposeBookDTOs proposeBook(UserProposeBookDTOs proposeBook);
     }
 }

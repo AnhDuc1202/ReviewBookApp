@@ -28,7 +28,7 @@ namespace ReviewBook.API.Controllers
             return Ok(this.userService.UserRegisterAccount(value));
         }
 
-        [HttpPut("Edit/{id}")]
+        [HttpPut("EditAccount/{id}")]
         public ActionResult Edit([FromBody] UserAccountUpdateDtOs value, int id){
             var result = this.userService.EditAccount(value.toAccountEntity());
             if(result == null)
@@ -48,9 +48,9 @@ namespace ReviewBook.API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("ReadReviews")]
-        public IActionResult ReadReviews([FromBody] int idBook){
-            return Ok(this.userService.readReview(idBook));
+        [HttpGet("ReadReviews/{id}")]
+        public IActionResult ReadReviews(int id){
+            return Ok(this.userService.readReview(id));
         }
 
         [HttpPost("WriteReview")]
@@ -61,6 +61,16 @@ namespace ReviewBook.API.Controllers
         [HttpPost("Search")]
         public IActionResult Search([FromBody] String bookOrAuthor){
             return Ok(this.userService.searchForBookOrAuthor(bookOrAuthor));
+        }
+
+        [HttpPost("ProposeTag")]
+        public IActionResult ProposeTag([FromBody] UserPropose_TagDTOs value){
+            return Ok(this.userService.proposeTag(value));
+        }
+
+        [HttpPost("ProposeBook")]
+        public IActionResult ProposeBook([FromBody] UserProposeBookDTOs value){
+            return Ok(this.userService.proposeBook(value.toEntity()));
         }
     }
 }

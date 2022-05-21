@@ -10,6 +10,7 @@ namespace ReviewBook.API.Models
     {
         public int Id { get; set; }
         public string Username { get; set; }
+        public int Id_Role { get; set; }
         public string Token { get; set; }
 
 
@@ -17,6 +18,7 @@ namespace ReviewBook.API.Models
         {
             Id = user.ID;
             Username = user.UserName;
+            Id_Role = user.ID_Role;
             Token = token;
         }
     }

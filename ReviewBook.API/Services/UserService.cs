@@ -27,11 +27,8 @@ namespace ReviewBook.API.Services
             _appSettings = appSettings.Value;
             this.context = context;
         }
-        // public UserService(DataContext context)
-        // {
-        //     this.context = context;
-        // }
 
+        //Authenticate
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
             var user = this.context.Accounts.FirstOrDefault(x => x.UserName == model.UserName && x.Password == model.Password);
@@ -45,6 +42,25 @@ namespace ReviewBook.API.Services
             return new AuthenticateResponse(user, token);
         }
 
+        private string generateJwtToken(Account user)
+        {
+            // generate token that is valid for 7 days
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("this is my custom Secret key for authentication");
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("Id", user.ID.ToString()),
+                                                     new Claim("Username", user.UserName.ToString()),
+                                                     new Claim("Password", user.Password.ToString()),
+                                                     new Claim("Role", user.ID_Role.ToString())       
+                                                    }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
         public Account CreateAccount(Account account)
         {
             this.context.Accounts.Add(account);
@@ -52,6 +68,8 @@ namespace ReviewBook.API.Services
             return account;
         }
 
+
+        //Register account
         public String UserRegisterAccount(UserRegisterDTOs user){
             Account exits = this.context.Accounts.FirstOrDefault(a => a.UserName == user.UserName);
             if(exits != null)
@@ -79,6 +97,8 @@ namespace ReviewBook.API.Services
             return this.context.Accounts.Include(a => a.role).FirstOrDefault(a => a.ID == IdAcc);
         }
 
+
+        //Edit account
         public Account? EditAccount(Account account)
         {
             var currentAccount = GetAccountById(account.ID);
@@ -95,24 +115,8 @@ namespace ReviewBook.API.Services
             return currentAccount;
 
         }
-        private string generateJwtToken(Account user)
-        {
-            // generate token that is valid for 7 days
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("this is my custom Secret key for authentication");
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim("Id", user.ID.ToString()),
-                                                     new Claim("Username", user.UserName.ToString()),
-                                                     new Claim("Password", user.Password.ToString()),       
-                                                    }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
 
+        //Read reviews
         public List<UserReadReviewDTOs> readReview(int idBook)
         {
             List<UserReadReviewDTOs> list = new List<UserReadReviewDTOs>();
@@ -133,6 +137,7 @@ namespace ReviewBook.API.Services
             return list;
         }
 
+        //Write reviews
         public Review writeReview(UserWriteReviewDTOs review)
         {
             Review result = new Review();
@@ -146,9 +151,27 @@ namespace ReviewBook.API.Services
             return result;
         }
 
+        //Search book
         public List<Book> searchForBookOrAuthor(String bookOrAuthor){
-            List<Book> result = this.context.Books.Where(b => b.Name == bookOrAuthor || this.context.Authors.FirstOrDefault(a => a.Id == b.ID_Aut).Name == bookOrAuthor).ToList();
+            List<Book> result = this.context.Books.Where(b => b.Name.ToLower().Contains(bookOrAuthor.ToLower()) || this.context.Authors.FirstOrDefault(a => a.Id == b.ID_Aut).Name.ToLower().Contains(bookOrAuthor.ToLower())).ToList();
             return result;
+        }
+
+        //Propose tag
+        public UserPropose_TagDTOs proposeTag(UserPropose_TagDTOs proposeTag){
+            Tag? check = this.context.Tag.FirstOrDefault(t => t.Name == proposeTag.Name);
+            if(check != null)
+                return null;
+            else
+                return proposeTag;
+        }
+
+        public UserProposeBookDTOs proposeBook(UserProposeBookDTOs proposeBook){
+            Book? check = this.context.Books.FirstOrDefault(b => b.Name == proposeBook.BookName);
+            if(check != null)
+                return null;
+            else
+                return proposeBook;
         }
     }
 }

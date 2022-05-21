@@ -13,6 +13,8 @@ namespace ReviewBook.API.Data
         public DbSet<MyBooks> myBooks { get; set; }
         public DbSet<Author> Authors { get; set; }
 
+        public DbSet<Tag> Tag { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
