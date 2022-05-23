@@ -8,9 +8,11 @@ using ReviewBook.API.Data.Entities;
 using ReviewBook.API.Services;
 using ReviewBook.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ReviewBook.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -22,30 +24,12 @@ namespace ReviewBook.API.Controllers
             this.userService = userService;
         }
 
-        [HttpPost("Register")]
-        public ActionResult<Account> Register([FromBody] UserRegisterDTOs value)
-        {
-            return Ok(this.userService.UserRegisterAccount(value));
-        }
-
         [HttpPut("EditAccount/{id}")]
         public ActionResult Edit([FromBody] UserAccountUpdateDtOs value, int id){
             var result = this.userService.EditAccount(value.toAccountEntity());
             if(result == null)
                 return BadRequest();
             return Ok(result);
-        }
-
-        [HttpPost("Login")]
-        
-        public IActionResult Authenticate([FromBody] AuthenticateRequest model)
-        {
-            var response = this.userService.Authenticate(model);
-
-            if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-
-            return Ok(response);
         }
 
         [HttpGet("ReadReviews/{id}")]
