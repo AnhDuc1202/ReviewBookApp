@@ -18,6 +18,8 @@ namespace ReviewBook.API.Data
         public DbSet<Book_Tag> BookTags { get; set; }
         public DbSet<Propose_Tag> ProposeTags { get; set; }
 
+        public DbSet<Tag> Tag { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
