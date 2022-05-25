@@ -8,7 +8,6 @@ using ReviewBook.API.Services;
 
 namespace ReviewBook.API.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -46,7 +45,7 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == id || acc.ID_Role == 1) 
+            if (acc.ID == id || acc.ID_Role == 1)
                 return Ok(_AccountService.GetAccountById(id));
 
             return BadRequest();
@@ -69,6 +68,29 @@ namespace ReviewBook.API.Controllers
             return Ok(acc);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("/api/AccountAdmin")]
+        public ActionResult<Account> PostA([FromBody] CreateAccountAdminDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            Console.WriteLine("----------------------");
+            Console.WriteLine("acc" + acc.FullName);
+            Console.WriteLine("id" + acc.ID_Role);
+            Console.WriteLine("acc" + acc.ID_Role.GetType());
+            Console.WriteLine("----------------------");
+            if (acc.ID_Role == 1)
+            {
+
+                var newacc = _AccountService.CreateAccount(value.toAccountEntity());
+                Console.WriteLine("----------------------");
+                Console.WriteLine("newacc" + newacc.FullName);
+                Console.WriteLine("----------------------");
+                if (newacc == null) return BadRequest();
+                return Ok(newacc);
+            }
+            return BadRequest();
+        }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("password/{id}")]
@@ -76,11 +98,12 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == id || acc.ID_Role == 1) {
+            if (acc.ID == id || acc.ID_Role == 1)
+            {
                 var kq = _AccountService.UpdatePasswordAccount(value.toAccountEntity(id));
                 if (kq == null) return BadRequest();
                 return Ok(kq);
-                }
+            }
             return BadRequest();
 
         }
@@ -92,7 +115,7 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == id || acc.ID_Role ==1 ) 
+            if (acc.ID == id || acc.ID_Role == 1)
             {
                 var kq = _AccountService.UpdateInforAccount(value.toAccountEntity(id));
                 if (kq == null) return BadRequest();
@@ -107,11 +130,11 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == id || acc.ID_Role == 1) 
+            if (acc.ID == id || acc.ID_Role == 1)
             {
-            var kq = _AccountService.DeleteAccount(id);
-            if (!kq) return BadRequest();
-            return Ok(kq);
+                var kq = _AccountService.DeleteAccount(id);
+                if (!kq) return BadRequest();
+                return Ok(kq);
             }
             return BadRequest();
 

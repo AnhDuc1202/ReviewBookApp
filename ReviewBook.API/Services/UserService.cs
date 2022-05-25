@@ -67,11 +67,20 @@ namespace ReviewBook.API.Services
         {
             var a = new JwtSecurityTokenHandler().ReadJwtToken(token);
             Account acc = new Account();
-            var id = a.Claims.First(c => c.Type == "id").Value;
+            var id = Int32.Parse(a.Claims.First(c => c.Type == "id").Value);
             var UserName = a.Claims.First(c => c.Type == "UserName").Value;
             var Password = a.Claims.First(c => c.Type == "Password").Value;
+            var k = a.Claims.First(c => c.Type == "Role").Value;
+            Console.WriteLine("---------------");
+            Console.WriteLine("---------------" + k);
+            Console.WriteLine("---------------" + k.GetType());
+            Console.WriteLine("---------------");
             var Role = Int32.Parse(a.Claims.First(c => c.Type == "Role").Value);
             if (id == null || UserName == null || Password == null || Role == null) return null;
+            acc.ID = id;
+            acc.UserName = UserName;
+            acc.Password = Password;
+            acc.ID_Role = Role;
             return acc;
         }
         public Account CreateAccount(Account account)
