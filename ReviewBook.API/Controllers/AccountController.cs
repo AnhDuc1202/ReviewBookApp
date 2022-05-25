@@ -92,12 +92,14 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID == id || acc.ID_Role == 1)
             {
+                string pass = _AccountService.GetAccountById(id).Password;
+                if (pass != value.CurrentPassword)
+                    return BadRequest("Mật khẩu cũ không đúng");
                 var kq = _AccountService.UpdatePasswordAccount(value.toAccountEntity(id));
-                if (kq == null) return BadRequest();
+                if (kq == null) return BadRequest("cập nhật thất bại");
                 return Ok(kq);
             }
-            return BadRequest();
-
+            return BadRequest("Bạn không có quyền thay đổi mật khẩu tài khoản này");
         }
 
 

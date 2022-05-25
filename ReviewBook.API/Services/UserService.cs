@@ -48,7 +48,6 @@ namespace ReviewBook.API.Services
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                         new Claim("id", user.ID.ToString()),
                         new Claim("UserName", user.UserName.ToString()),
-                        new Claim("Password", user.Password.ToString()),
                         new Claim("Role", user.ID_Role.ToString())
                     };
 
@@ -69,12 +68,10 @@ namespace ReviewBook.API.Services
             Account acc = new Account();
             var id = Int32.Parse(a.Claims.First(c => c.Type == "id").Value);
             var UserName = a.Claims.First(c => c.Type == "UserName").Value;
-            var Password = a.Claims.First(c => c.Type == "Password").Value;
             var Role = Int32.Parse(a.Claims.First(c => c.Type == "Role").Value);
-            if (id == null || UserName == null || Password == null || Role == null) return null;
+            if (id == null || UserName == null || Role == null) return null;
             acc.ID = id;
             acc.UserName = UserName;
-            acc.Password = Password;
             acc.ID_Role = Role;
             return acc;
         }
