@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ReviewBook.API.Data.Entities;
 using ReviewBook.API.Data;
@@ -19,13 +15,14 @@ namespace ReviewBook.API.Services
     public class UserService : IUserService
     {
         private readonly DataContext context;
-
+        public readonly IConfiguration _configuration;
         private readonly AppSettings _appSettings;
 
-        public UserService(IOptions<AppSettings> appSettings, DataContext context)
+        public UserService(IOptions<AppSettings> appSettings, DataContext context, IConfiguration configuration)
         {
             _appSettings = appSettings.Value;
             this.context = context;
+            _configuration = configuration;
         }
 
         //Authenticate
@@ -45,87 +42,53 @@ namespace ReviewBook.API.Services
         private string generateJwtToken(Account user)
         {
             // generate token that is valid for 7 days
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("this is my custom Secret key for authentication");
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim("Id", user.ID.ToString()),
-                                                     new Claim("Username", user.UserName.ToString()),
-                                                     new Claim("Password", user.Password.ToString()),
-                                                     new Claim("Role", user.ID_Role.ToString())       
-                                                    }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
+            var claims = new[] {
+                        new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                        new Claim("id", user.ID.ToString()),
+                        new Claim("UserName", user.UserName.ToString()),
+                        new Claim("Password", user.Password.ToString()),
+                        new Claim("Role", user.ID_Role.ToString())
+                    };
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,
+                expires: DateTime.UtcNow.AddMinutes(10),
+                signingCredentials: signIn);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public Account? jwtTokenToAccount(string token)
+        {
+            var a = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            Account acc = new Account();
+            var id = a.Claims.First(c => c.Type == "id").Value;
+            var UserName = a.Claims.First(c => c.Type == "UserName").Value;
+            var Password = a.Claims.First(c => c.Type == "Password").Value;
+            var Role = Int32.Parse(a.Claims.First(c => c.Type == "Role").Value);
+            if (id == null || UserName == null || Password == null || Role == null) return null;
+            return acc;
+        }
         public Account CreateAccount(Account account)
         {
             this.context.Accounts.Add(account);
             this.context.SaveChanges();
             return account;
         }
-
-
-        //Register account
-        public String UserRegisterAccount(UserRegisterDTOs user){
-            Account exits = this.context.Accounts.FirstOrDefault(a => a.UserName == user.UserName);
-            if(exits != null)
-                return "This user name is already registered!";
-            else{
-                if(user.Password == user.ConfirmPassword){
-                    Account result = new Account();
-                    result.UserName = user.UserName;
-                    result.Password = user.Password;
-                    CreateAccount(result);
-                    return "Register successfully!";
-                }
-                else
-                    return "Password and it's confirm are not the same!";
-            }
-        }
-
-        public Account GetById(int id)
-        {
-            return this.context.Accounts.FirstOrDefault(x => x.ID == id);
-        }
-
-        public Account? GetAccountById(int IdAcc)
-        {
-            return this.context.Accounts.Include(a => a.role).FirstOrDefault(a => a.ID == IdAcc);
-        }
-
-
-        //Edit account
-        public Account? EditAccount(Account account)
-        {
-            var currentAccount = GetAccountById(account.ID);
-            if (currentAccount == null)
-                return null;
-            currentAccount.Address = account.Address;
-            currentAccount.Birthday = account.Birthday;
-            currentAccount.FullName = account.FullName;
-            currentAccount.Password = account.Password;
-            currentAccount.Picture = account.Picture;
-            currentAccount.UserName = account.UserName;
-            this.context.Accounts.Update(currentAccount);
-            this.context.SaveChanges();
-            return currentAccount;
-
-        }
-
         //Read reviews
-        public List<UserReadReviewDTOs> readReview(int idBook)
+        public List<UserReadReviewDTOs> readReviewbyIdBook(int idBook)
         {
             List<UserReadReviewDTOs> list = new List<UserReadReviewDTOs>();
-            List<Review> reviews = this.context.Reviews.Where(r => r.ID_Book == idBook).ToList();
+            List<Review> reviews = this.context.Reviews.Where(r => r.ID_Book == idBook).Include(d => d.Account).ToList();
             foreach (Review review in reviews)
             {
                 UserReadReviewDTOs result = new UserReadReviewDTOs();
-                String UserName = GetAccountById(review.ID_Acc).UserName;
-                result.UserName = UserName;
+                result.UserName = review.Account.UserName;
                 result.Id = review.Id;
                 result.ID_Acc = review.ID_Acc;
                 result.ID_Book = review.ID_Book;
@@ -152,26 +115,15 @@ namespace ReviewBook.API.Services
         }
 
         //Search book
-        public List<Book> searchForBookOrAuthor(String bookOrAuthor){
+        public List<Book> searchForBookOrAuthor(String bookOrAuthor)
+        {
             List<Book> result = this.context.Books.Where(b => b.Name.ToLower().Contains(bookOrAuthor.ToLower()) || this.context.Authors.FirstOrDefault(a => a.Id == b.ID_Aut).Name.ToLower().Contains(bookOrAuthor.ToLower())).ToList();
             return result;
         }
 
-        //Propose tag
-        public UserPropose_TagDTOs proposeTag(UserPropose_TagDTOs proposeTag){
-            Tag? check = this.context.Tag.FirstOrDefault(t => t.Name == proposeTag.Name);
-            if(check != null)
-                return null;
-            else
-                return proposeTag;
-        }
-
-        public UserProposeBookDTOs proposeBook(UserProposeBookDTOs proposeBook){
-            Book? check = this.context.Books.FirstOrDefault(b => b.Name == proposeBook.BookName);
-            if(check != null)
-                return null;
-            else
-                return proposeBook;
+        public Account GetById(int id)
+        {
+            return this.context.Accounts.FirstOrDefault(x => x.ID == id);
         }
     }
 }

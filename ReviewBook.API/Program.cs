@@ -42,7 +42,8 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseNpgsql(connectionString));
+
 
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {

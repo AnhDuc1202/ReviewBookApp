@@ -1,60 +1,57 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ReviewBook.API.DTOs;
-using ReviewBook.API.Data.Entities;
 using ReviewBook.API.Services;
-using ReviewBook.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ReviewBook.API.Models;
+using Microsoft.Net.Http.Headers;
 
 namespace ReviewBook.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService userService;
+        private readonly IUserService _userService;
 
         public UserController(IUserService userService)
         {
-            this.userService = userService;
+            _userService = userService;
         }
 
-        [HttpPut("EditAccount/{id}")]
-        public ActionResult Edit([FromBody] UserAccountUpdateDtOs value, int id){
-            var result = this.userService.EditAccount(value.toAccountEntity());
-            if(result == null)
-                return BadRequest();
-            return Ok(result);
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("ReviewsbyIdBook/{id}")]
+        public IActionResult ReadReviews(int id)
+        {
+            return Ok(this._userService.readReviewbyIdBook(id));
         }
 
-        [HttpGet("ReadReviews/{id}")]
-        public IActionResult ReadReviews(int id){
-            return Ok(this.userService.readReview(id));
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("Review")]
+        public IActionResult WriteReview([FromBody] UserWriteReviewDTOs review)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+
+            if (acc.ID == review.ID_Acc)
+                return Ok(this._userService.writeReview(review));
+            return BadRequest();
         }
 
-        [HttpPost("WriteReview")]
-        public IActionResult WriteReview([FromBody] UserWriteReviewDTOs review){
-            return Ok(this.userService.writeReview(review));
-        }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Search")]
-        public IActionResult Search([FromBody] String bookOrAuthor){
-            return Ok(this.userService.searchForBookOrAuthor(bookOrAuthor));
+        public IActionResult Search([FromBody] String bookOrAuthor)
+        {
+            return Ok(this._userService.searchForBookOrAuthor(bookOrAuthor));
         }
 
-        [HttpPost("ProposeTag")]
-        public IActionResult ProposeTag([FromBody] UserPropose_TagDTOs value){
-            return Ok(this.userService.proposeTag(value));
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] AuthenticateRequest model)
+        {
+            return Ok(_userService.Authenticate(model));
         }
 
-        [HttpPost("ProposeBook")]
-        public IActionResult ProposeBook([FromBody] UserProposeBookDTOs value){
-            return Ok(this.userService.proposeBook(value.toEntity()));
-        }
     }
 }

@@ -14,8 +14,10 @@ namespace ReviewBook.API.Services
             _context = context;
         }
 
-        public Account CreateAccount(Account account)
+        public Account? CreateAccount(Account account)
         {
+            var currentAccount = _context.Accounts.FirstOrDefault(a => a.UserName == account.UserName);
+            if (currentAccount != null) return null;
             _context.Accounts.Add(account);
             _context.SaveChanges();
             return account;
@@ -55,6 +57,17 @@ namespace ReviewBook.API.Services
             .FirstOrDefault(a => a.ID == IdAcc);
         }
 
+        public Account? GetAccountByIdNoPassword(int IdAcc)
+        {
+            var acc = _context.Accounts
+            .Include(a => a.role)
+            .Include(b => b.myFollowers)
+            .Include(c => c.myFollowings)
+            .FirstOrDefault(a => a.ID == IdAcc);
+            if (acc != null) acc.Password = String.Empty;
+            return acc;
+        }
+
         public List<Account> GetAllAccounts()
         {
             return _context.Accounts
@@ -64,6 +77,17 @@ namespace ReviewBook.API.Services
             .ToList();
         }
 
+        public List<Account> GetAllAccountsNoPassword()
+        {
+            var accs = _context.Accounts
+            .Include(a => a.role)
+            .Include(b => b.myFollowers)
+            .Include(c => c.myFollowings)
+            .ToList();
+            accs.ForEach(c => c.Password = string.Empty);
+            return accs;
+        }
+
         public Account? UpdateInforAccount(Account account)
         {
             var currentAcc = GetAccountById(account.ID);
@@ -71,10 +95,10 @@ namespace ReviewBook.API.Services
             currentAcc.Address = account.Address;
             currentAcc.Birthday = account.Birthday;
             currentAcc.FullName = account.FullName;
-            currentAcc.ID_Role = account.ID_Role;
+            //currentAcc.ID_Role = account.ID_Role;
             currentAcc.IsActive = account.IsActive;
             currentAcc.Picture = account.Picture;
-            currentAcc.UserName = account.UserName;
+            //currentAcc.UserName = account.UserName;
             _context.Accounts.Update(currentAcc);
             _context.SaveChanges();
             return currentAcc;
