@@ -74,18 +74,10 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            Console.WriteLine("----------------------");
-            Console.WriteLine("acc" + acc.FullName);
-            Console.WriteLine("id" + acc.ID_Role);
-            Console.WriteLine("acc" + acc.ID_Role.GetType());
-            Console.WriteLine("----------------------");
             if (acc.ID_Role == 1)
             {
 
                 var newacc = _AccountService.CreateAccount(value.toAccountEntity());
-                Console.WriteLine("----------------------");
-                Console.WriteLine("newacc" + newacc.FullName);
-                Console.WriteLine("----------------------");
                 if (newacc == null) return BadRequest();
                 return Ok(newacc);
             }

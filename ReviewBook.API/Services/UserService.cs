@@ -70,11 +70,6 @@ namespace ReviewBook.API.Services
             var id = Int32.Parse(a.Claims.First(c => c.Type == "id").Value);
             var UserName = a.Claims.First(c => c.Type == "UserName").Value;
             var Password = a.Claims.First(c => c.Type == "Password").Value;
-            var k = a.Claims.First(c => c.Type == "Role").Value;
-            Console.WriteLine("---------------");
-            Console.WriteLine("---------------" + k);
-            Console.WriteLine("---------------" + k.GetType());
-            Console.WriteLine("---------------");
             var Role = Int32.Parse(a.Claims.First(c => c.Type == "Role").Value);
             if (id == null || UserName == null || Password == null || Role == null) return null;
             acc.ID = id;

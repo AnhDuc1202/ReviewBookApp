@@ -58,6 +58,12 @@ builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddCors(o =>
+                o.AddPolicy("CorsPolicy",
+                builder => builder.WithOrigins("http://localhost:7295")));
+
+
+
 
 var app = builder.Build();
 
@@ -75,7 +81,7 @@ app.UseCors(x => x
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());
-
+app.UseCors("CorsPolicy");
 // custom jwt auth middleware
 app.UseMiddleware<JwtMiddleware>();
 

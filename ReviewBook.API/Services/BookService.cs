@@ -79,7 +79,7 @@ namespace ReviewBook.API.Services
 
         public List<Book> GetAllBooks()
         {
-            return _context.Books.Include(a => a.Tags).ToList();
+            return _context.Books.Include(a => a.Tags).Include(b => b.author).Include(c => c.publisher).Include(d => d.reviews).ToList();
         }
 
         public List<Book_Tag> GetAllBookTagsByIdBook(int ID)
@@ -100,7 +100,7 @@ namespace ReviewBook.API.Services
 
         public Book? GetBookById(int ID)
         {
-            return _context.Books.Include(a => a.Tags).FirstOrDefault(p => p.Id == ID);
+            return _context.Books.Include(a => a.Tags).Include(b => b.author).Include(c => c.publisher).Include(d => d.reviews).FirstOrDefault(p => p.Id == ID);
         }
 
         public Propose_Tag? GetBookProposeTagById(int ID)
@@ -119,6 +119,11 @@ namespace ReviewBook.API.Services
             .Include(a => a.Tags).FirstOrDefault(p => p.ID == ID);
         }
 
+        public List<Propose> GetProposeByIdUser(int ID)
+        {
+            return _context.Proposes.Where(p => p.Status == false && p.ID_Acc_Request == ID)
+            .Include(a => a.Tags).ToList();
+        }
 
         public Book? UpdateBook(Book book)
         {

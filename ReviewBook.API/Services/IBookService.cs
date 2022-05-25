@@ -12,6 +12,7 @@ namespace ReviewBook.API.Services
         public bool DeleteBook(int ID);
 
         public List<Propose> GetAllProposes();
+        public List<Propose> GetProposeByIdUser(int ID);
         public Propose? GetProposeById(int ID);
         public Propose CreatePropose(Propose propose);
         public Propose? UpdatePropose(Propose propose);
