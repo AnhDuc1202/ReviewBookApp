@@ -7,10 +7,9 @@ namespace ReviewBook.API.Services
     public interface IRateBookService
     {
         public List<RateBook> GetAllRateBook();
-        public List<RateBook> GetAllRateBookByIdBook(int idBook);
+        public double GetAllRateBookByIdBook(int idBook);
         public RateBook? GetRateBookById(int Id);
-        public RateBook CreateRateBook(RateBook rateBook);
-        public RateBook? UpdateRateBook(RateBook rateBook);
-        public bool DeleteRateBook(int Id);
+        public RateBook? GetRateBookByIdAccAndIdBook(int IdAcc, int idBook);
+        public RateBook CreateOrUpdateRateBook(RateBook rateBook);
     }
 }

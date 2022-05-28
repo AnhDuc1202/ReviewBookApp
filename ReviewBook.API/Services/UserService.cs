@@ -81,42 +81,42 @@ namespace ReviewBook.API.Services
             this.context.SaveChanges();
             return account;
         }
-        //Read reviews
-        public List<UserReadReviewDTOs> readReviewbyIdBook(int idBook)
-        {
-            List<UserReadReviewDTOs> list = new List<UserReadReviewDTOs>();
-            List<Review> reviews = this.context.Reviews
-                                    .Where(r => r.ID_Book == idBook)
-                                    .Include(d => d.Account)
-                                    .Include(e => e.reviewChildrens)
-                                    .AsNoTracking()
-                                    .ToList();
-            foreach (Review review in reviews)
-            {
-                UserReadReviewDTOs result = new UserReadReviewDTOs();
-                result.UserName = review.Account.UserName;
-                result.Id = review.Id;
-                result.ID_Acc = review.ID_Acc;
-                result.ID_Book = review.ID_Book;
-                result.Content = review.Content;
-                result.Date = review.Date;
-                list.Add(result);
-            }
-            return list;
-        }
+        // //Read reviews
+        // public List<UserReadReviewDTOs> readReviewbyIdBook(int idBook)
+        // {
+        //     List<UserReadReviewDTOs> list = new List<UserReadReviewDTOs>();
+        //     List<Review> reviews = this.context.Reviews
+        //                             .Where(r => r.ID_Book == idBook)
+        //                             .Include(d => d.Account)
+        //                             .Include(e => e.reviewChildrens)
+        //                             .AsNoTracking()
+        //                             .ToList();
+        //     foreach (Review review in reviews)
+        //     {
+        //         UserReadReviewDTOs result = new UserReadReviewDTOs();
+        //         result.UserName = review.Account.UserName;
+        //         result.Id = review.Id;
+        //         result.ID_Acc = review.ID_Acc;
+        //         result.ID_Book = review.ID_Book;
+        //         result.Content = review.Content;
+        //         result.Date = review.Date;
+        //         list.Add(result);
+        //     }
+        //     return list;
+        // }
 
-        //Write reviews
-        public Review writeReview(UserWriteReviewDTOs review)
-        {
-            Review result = new Review();
-            result.ID_Acc = review.ID_Acc;
-            result.ID_Book = review.ID_Book;
-            result.Content = review.Content;
-            result.Date = review.Date;
-            this.context.Reviews.Add(result);
-            this.context.SaveChanges();
-            return result;
-        }
+        // //Write reviews
+        // public Review writeReview(UserWriteReviewDTOs review)
+        // {
+        //     Review result = new Review();
+        //     result.ID_Acc = review.ID_Acc;
+        //     result.ID_Book = review.ID_Book;
+        //     result.Content = review.Content;
+        //     result.Date = review.Date;
+        //     this.context.Reviews.Add(result);
+        //     this.context.SaveChanges();
+        //     return result;
+        // }
 
         //Search book
         public List<Book> searchForBookOrAuthor(String bookOrAuthor)

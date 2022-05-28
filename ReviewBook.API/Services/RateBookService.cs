@@ -13,20 +13,19 @@ namespace ReviewBook.API.Services
             _context = context;
         }
 
-        public RateBook CreateRateBook(RateBook rateBook)
+        public RateBook CreateOrUpdateRateBook(RateBook rateBook)
         {
+            var currentRateBook = GetRateBookByIdAccAndIdBook(rateBook.ID_Acc, rateBook.ID_Book);
+            if (currentRateBook != null)
+            {
+                currentRateBook.Rate = rateBook.Rate;
+                _context.rateBooks.Update(currentRateBook);
+                _context.SaveChanges();
+                return currentRateBook;
+            }
             _context.rateBooks.Add(rateBook);
             _context.SaveChanges();
             return rateBook;
-        }
-
-        public bool DeleteRateBook(int Id)
-        {
-            var currentRateBook = GetRateBookById(Id);
-            if (currentRateBook == null) return false;
-            _context.rateBooks.Remove(currentRateBook);
-            _context.SaveChanges();
-            return true;
         }
 
         public List<RateBook> GetAllRateBook()
@@ -34,9 +33,18 @@ namespace ReviewBook.API.Services
             return _context.rateBooks.ToList();
         }
 
-        public List<RateBook> GetAllRateBookByIdBook(int idBook)
+        public double GetAllRateBookByIdBook(int idBook)
         {
-            return _context.rateBooks.Where(c => c.ID_Book == idBook).ToList();
+            double rateAvg = 0;
+
+            var rateBooks = _context.rateBooks.Where(c => c.ID_Book == idBook).ToList();
+            double sum = 0;
+            if (rateBooks.Count() == 0) return rateAvg;
+            foreach (RateBook b in rateBooks)
+            {
+                sum += b.Rate;
+            }
+            return sum / rateBooks.Count();
         }
 
         public RateBook? GetRateBookById(int Id)
@@ -44,14 +52,10 @@ namespace ReviewBook.API.Services
             return _context.rateBooks.FirstOrDefault(c => c.ID == Id);
         }
 
-        public RateBook? UpdateRateBook(RateBook rateBook)
+        public RateBook? GetRateBookByIdAccAndIdBook(int IdAcc, int idBook)
         {
-            var currentRateBook = GetRateBookById(rateBook.ID);
-            if (currentRateBook == null) return null;
-            currentRateBook.Rate = rateBook.Rate;
-            _context.rateBooks.Update(currentRateBook);
-            _context.SaveChanges();
-            return rateBook;
+            return _context.rateBooks
+            .FirstOrDefault(c => c.ID_Acc == IdAcc && c.ID_Book == idBook);
         }
     }
 }

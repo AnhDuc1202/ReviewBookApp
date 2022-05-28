@@ -13,12 +13,18 @@ namespace ReviewBook.API.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookService _BookService;
+        private readonly IRateBookService _rateBookService;
         private readonly IUserService _userService;
+        private readonly IReviewService _reviewService;
 
-        public BookController(IBookService bookService, IUserService userService)
+        public BookController(IBookService bookService,
+        IRateBookService rateBookService, IUserService userService
+        , IReviewService reviewService)
         {
             _BookService = bookService;
+            _rateBookService = rateBookService;
             _userService = userService;
+            _reviewService = reviewService;
         }
 
         [HttpGet]
@@ -33,9 +39,122 @@ namespace ReviewBook.API.Controllers
             return Ok(_BookService.GetBookById(id));
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("CreateOrUpdateRate")]
+        public ActionResult<RateBook> PostRate([FromBody] RateBookDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == value.ID_Acc)
+            {
+                var b = _BookService.GetBookById(value.ID_Book);
+                if (b == null) return BadRequest("sách không còn tồn tại");
+                var r = _rateBookService.CreateOrUpdateRateBook(value.toEntitiesRateBook());
+                if (r == null) return BadRequest("đánh giá số sao thất bại");
+                return Ok(r);
+            }
+            return BadRequest("Không đủ quyền");
+        }
+
+        [HttpGet("RateAvg/{id}")]
+        public ActionResult<IEnumerable<BookAvgDTOs>> GetAllRateBookbyID(int id)
+        {
+            BookAvgDTOs b = new BookAvgDTOs(id, _rateBookService.GetAllRateBookByIdBook(id));
+            return Ok(b);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("Review")]
+        public ActionResult<Review> PostReview([FromBody] ReviewDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == value.ID_Acc)
+            {
+                var b = _BookService.GetBookById(value.ID_Book);
+                if (b == null) return BadRequest("sách không còn tồn tại");
+                var r = _reviewService.CreateReview(value.toEntitiesReviewBook());
+                if (r == null) return BadRequest("bình luận thất bại");
+                return Ok(r);
+            }
+            return BadRequest("Không đủ quyền");
+        }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut("Review/{id}")]
+        public ActionResult<Review> PutReview(int id, [FromBody] ReviewDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == value.ID_Acc)
+            {
+                var r = _reviewService.UpdateReview(value.toEntitiesReviewBook(id));
+                if (r == null) return BadRequest("cập nhật bình luận thất bại");
+                return Ok(r);
+            }
+            return BadRequest("Không đủ quyền");
+        }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("Review/{id}")]
+        public ActionResult DeleteReview(int id)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == _reviewService.GetReviewById(id).ID_Acc)
+            {
+                return Ok(_reviewService.DeleteReview(id));
+            }
+            return BadRequest("Không đủ quyền hoặc id review không tồn tại");
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("Review/Reply")]
+        public ActionResult<ReviewChildren> PostReviewReply([FromBody] ReviewChildrenDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == value.ID_Acc)
+            {
+                var b = _reviewService.GetReviewById(value.Id_parent);
+                if (b == null) return BadRequest("đánh giá bạn trả lời không tồn tại");
+                var r = _reviewService.CreateReviewChildren(value.toEntitiesReviewChildren());
+                if (r == null) return BadRequest("trả lời bình luận thất bại");
+                return Ok(r);
+            }
+            return BadRequest("Không đủ quyền");
+        }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut("Review/Reply/{id}")]
+        public ActionResult<ReviewChildren> PutReviewReply(int id, [FromBody] ReviewChildrenDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == value.ID_Acc)
+            {
+                var r = _reviewService.UpdateReviewChildren(value.toEntitiesReviewChildren(id));
+                if (r == null) return BadRequest("cập nhật bình luận thất bại");
+                return Ok(r);
+            }
+            return BadRequest("Không đủ quyền");
+        }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("Review/Reply/{id}")]
+        public ActionResult DeleteReviewReply(int id)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == _reviewService.GetReviewChildrenById(id).ID_Acc)
+            {
+                return Ok(_reviewService.DeleteReviewChildren(id));
+            }
+            return BadRequest("Không đủ quyền hoặc id review không tồn tại");
+        }
+
+
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public ActionResult<Book> Post([FromBody] CreateBookDTOs value)
+        public ActionResult<Book> PostBook([FromBody] CreateBookDTOs value)
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);

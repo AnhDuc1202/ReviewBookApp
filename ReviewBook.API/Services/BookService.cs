@@ -118,6 +118,8 @@ namespace ReviewBook.API.Services
             .Include(b => b.author)
             .Include(c => c.publisher)
             .Include(d => d.reviews)
+                .ThenInclude(d1 => d1.reviewChildrens)
+                .ThenInclude(d2 => d2.Account)
             .AsNoTracking()
             .FirstOrDefault(p => p.Id == ID);
         }
@@ -152,6 +154,7 @@ namespace ReviewBook.API.Services
             currentBook.ID_Aut = book.ID_Aut;
             currentBook.ID_Pub = book.ID_Pub;
             currentBook.Picture = book.Picture;
+            currentBook.description = book.description;
             currentBook.PublishedYear = book.PublishedYear;
             _context.Books.Update(currentBook);
             _context.SaveChanges();

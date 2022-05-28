@@ -21,7 +21,7 @@ namespace ReviewBook.API.Services
             return review;
         }
 
-        public ReviewChildren CreateReviewChidren(ReviewChildren review)
+        public ReviewChildren CreateReviewChildren(ReviewChildren review)
         {
             _context.reviewChildrens.Add(review);
             _context.SaveChanges();
@@ -37,7 +37,7 @@ namespace ReviewBook.API.Services
             return true;
         }
 
-        public bool DeleteReviewChidren(int IdReview)
+        public bool DeleteReviewChildren(int IdReview)
         {
             var currentReview = _context.reviewChildrens.FirstOrDefault(c => c.Id == IdReview);
             if (currentReview == null) return false;
@@ -55,6 +55,15 @@ namespace ReviewBook.API.Services
             .ToList();
         }
 
+        public Review? GetReviewById(int Id)
+        {
+            return _context.Reviews
+            .Include(c => c.reviewChildrens)
+            .ThenInclude(d => d.Account)
+            .AsNoTracking()
+            .FirstOrDefault(k => k.Id == Id);
+        }
+
         public List<Review> GetReviewByIdBook(int IdBook)
         {
             return _context.Reviews
@@ -65,21 +74,28 @@ namespace ReviewBook.API.Services
             .ToList();
         }
 
+        public ReviewChildren? GetReviewChildrenById(int Id)
+        {
+            return _context.reviewChildrens.FirstOrDefault(c => c.Id == Id);
+        }
+
         public Review? UpdateReview(Review review)
         {
             var currentReview = _context.Reviews.FirstOrDefault(c => c.Id == review.Id);
             if (currentReview == null) return null;
-            currentReview.Content = currentReview.Content;
+            currentReview.Content = review.Content;
+            currentReview.Date = review.Date;
             _context.Reviews.Update(currentReview);
             _context.SaveChanges();
             return review;
         }
 
-        public ReviewChildren? UpdateReviewChidren(ReviewChildren review)
+        public ReviewChildren? UpdateReviewChildren(ReviewChildren review)
         {
             var currentReview = _context.reviewChildrens.FirstOrDefault(c => c.Id == review.Id);
             if (currentReview == null) return null;
-            currentReview.Content = currentReview.Content;
+            currentReview.Content = review.Content;
+            currentReview.Date = review.Date;
             _context.reviewChildrens.Update(currentReview);
             _context.SaveChanges();
             return review;

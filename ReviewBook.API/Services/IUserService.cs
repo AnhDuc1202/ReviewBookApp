@@ -13,9 +13,9 @@ namespace ReviewBook.API.Services
         // IEnumerable<User> GetAll();
         public Account? jwtTokenToAccount(string token);
         public Account GetById(int id);
-        public List<UserReadReviewDTOs> readReviewbyIdBook(int idBook);
+        // public List<UserReadReviewDTOs> readReviewbyIdBook(int idBook);
 
-        public Review writeReview(UserWriteReviewDTOs review);
+        // public Review writeReview(UserWriteReviewDTOs review);
 
         public List<Book> searchForBookOrAuthor(String bookOrAuthor);
     }
