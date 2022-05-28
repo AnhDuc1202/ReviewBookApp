@@ -6,7 +6,6 @@ namespace ReviewBook.API.DTOs
     public class UserReadReviewDTOs
     {
         public int Id { get; set; }
-
         public String UserName { get; set; }
         public int ID_Acc { get; set; }
         public int ID_Book { get; set; }

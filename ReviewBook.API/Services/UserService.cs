@@ -57,7 +57,7 @@ namespace ReviewBook.API.Services
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddDays(1),
                 signingCredentials: signIn);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -85,7 +85,12 @@ namespace ReviewBook.API.Services
         public List<UserReadReviewDTOs> readReviewbyIdBook(int idBook)
         {
             List<UserReadReviewDTOs> list = new List<UserReadReviewDTOs>();
-            List<Review> reviews = this.context.Reviews.Where(r => r.ID_Book == idBook).Include(d => d.Account).ToList();
+            List<Review> reviews = this.context.Reviews
+                                    .Where(r => r.ID_Book == idBook)
+                                    .Include(d => d.Account)
+                                    .Include(e => e.reviewChildrens)
+                                    .AsNoTracking()
+                                    .ToList();
             foreach (Review review in reviews)
             {
                 UserReadReviewDTOs result = new UserReadReviewDTOs();
@@ -95,7 +100,6 @@ namespace ReviewBook.API.Services
                 result.ID_Book = review.ID_Book;
                 result.Content = review.Content;
                 result.Date = review.Date;
-                result.Rate = review.Rate;
                 list.Add(result);
             }
             return list;
@@ -109,7 +113,6 @@ namespace ReviewBook.API.Services
             result.ID_Book = review.ID_Book;
             result.Content = review.Content;
             result.Date = review.Date;
-            result.Rate = review.Rate;
             this.context.Reviews.Add(result);
             this.context.SaveChanges();
             return result;

@@ -54,6 +54,7 @@ namespace ReviewBook.API.Services
             .Include(a => a.role)
             .Include(b => b.myFollowers)
             .Include(c => c.myFollowings)
+            .AsNoTracking()
             .FirstOrDefault(a => a.ID == IdAcc);
         }
 
@@ -63,6 +64,7 @@ namespace ReviewBook.API.Services
             .Include(a => a.role)
             .Include(b => b.myFollowers)
             .Include(c => c.myFollowings)
+            .AsNoTracking()
             .FirstOrDefault(a => a.ID == IdAcc);
             if (acc != null) acc.Password = String.Empty;
             return acc;
@@ -74,6 +76,7 @@ namespace ReviewBook.API.Services
             .Include(a => a.role)
             .Include(b => b.myFollowers)
             .Include(c => c.myFollowings)
+            .AsNoTracking()
             .ToList();
         }
 
@@ -83,6 +86,7 @@ namespace ReviewBook.API.Services
             .Include(a => a.role)
             .Include(b => b.myFollowers)
             .Include(c => c.myFollowings)
+            .AsNoTracking()
             .ToList();
             accs.ForEach(c => c.Password = string.Empty);
             return accs;

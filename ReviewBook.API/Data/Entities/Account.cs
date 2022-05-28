@@ -15,6 +15,8 @@ namespace ReviewBook.API.Data.Entities
             myBooks = new List<MyBooks>();
             reviews = new List<Review>();
             Proposes = new List<Propose>();
+            RateBooks = new List<RateBook>();
+            ReviewChildrens = new List<ReviewChildren>();
         }
         [Key]
         public int ID { get; set; }
@@ -35,6 +37,8 @@ namespace ReviewBook.API.Data.Entities
         public virtual List<Follow> myFollowers { get; set; }
         public virtual List<MyBooks> myBooks { get; set; }
         public virtual List<Review> reviews { get; set; }
+        public virtual List<ReviewChildren> ReviewChildrens { get; set; }
         public virtual List<Propose> Proposes { get; set; }
+        public virtual List<RateBook> RateBooks { get; set; }
     }
 }

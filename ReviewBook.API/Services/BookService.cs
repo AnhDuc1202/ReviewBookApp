@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ReviewBook.API.Data;
 using ReviewBook.API.Data.Entities;
+using ReviewBook.API.DTOs;
 
 namespace ReviewBook.API.Services
 {
@@ -20,8 +21,10 @@ namespace ReviewBook.API.Services
             return book;
         }
 
-        public Book_Tag CreateBookTag(Book_Tag book_Tag)
+        public Book_Tag? CreateBookTag(Book_Tag book_Tag)
         {
+            var bt = _context.BookTags.FirstOrDefault(p => p.ID_Book == book_Tag.ID_Book && p.ID_Tag == book_Tag.ID_Tag);
+            if (bt != null) return null;
             _context.BookTags.Add(book_Tag);
             _context.SaveChanges();
             return book_Tag;
@@ -79,7 +82,16 @@ namespace ReviewBook.API.Services
 
         public List<Book> GetAllBooks()
         {
-            return _context.Books.Include(a => a.Tags).Include(b => b.author).Include(c => c.publisher).Include(d => d.reviews).ToList();
+            return _context.Books
+            .Include(a => a.Tags)
+                .ThenInclude(a1 => a1.tag)
+            .Include(b => b.author)
+            .Include(c => c.publisher)
+            .Include(d => d.reviews)
+                .ThenInclude(d1 => d1.reviewChildrens)
+                .ThenInclude(d2 => d2.Account)
+            .AsNoTracking()
+            .ToList();
         }
 
         public List<Book_Tag> GetAllBookTagsByIdBook(int ID)
@@ -100,7 +112,14 @@ namespace ReviewBook.API.Services
 
         public Book? GetBookById(int ID)
         {
-            return _context.Books.Include(a => a.Tags).Include(b => b.author).Include(c => c.publisher).Include(d => d.reviews).FirstOrDefault(p => p.Id == ID);
+            return _context.Books
+            .Include(a => a.Tags)
+                .ThenInclude(a1 => a1.tag)
+            .Include(b => b.author)
+            .Include(c => c.publisher)
+            .Include(d => d.reviews)
+            .AsNoTracking()
+            .FirstOrDefault(p => p.Id == ID);
         }
 
         public Propose_Tag? GetBookProposeTagById(int ID)

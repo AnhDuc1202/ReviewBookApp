@@ -10,6 +10,7 @@ namespace ReviewBook.API.DTOs
         public int ID_Pub { get; set; }
         public int PublishedYear { get; set; }
         public byte[]? Picture { get; set; }
+        public String description { get; set; }
         public List<int> List_ID_Tags_Remove { get; set; }
         public List<int> List_ID_Tags_Add { get; set; }
         public Book toBookEntity(int ID)
@@ -21,6 +22,7 @@ namespace ReviewBook.API.DTOs
             b.ID_Pub = ID_Pub;
             b.PublishedYear = PublishedYear;
             b.Picture = Picture;
+            b.description = description;
             return b;
         }
     }

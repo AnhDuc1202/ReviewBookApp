@@ -10,6 +10,8 @@ namespace ReviewBook.API.Data.Entities
             Accounts = new List<MyBooks>();
             reviews = new List<Review>();
             Tags = new List<Book_Tag>();
+            RateBooks = new List<RateBook>();
+            description = String.Empty;
         }
         [Key]
         public int Id { get; set; }
@@ -19,10 +21,12 @@ namespace ReviewBook.API.Data.Entities
         public int ID_Pub { get; set; }
         public int PublishedYear { get; set; }
         public byte[]? Picture { get; set; }
+        public String description { get; set; }
         public virtual List<MyBooks> Accounts { get; set; }
         public virtual List<Review> reviews { get; set; }
         public virtual Author author { get; set; }
         public virtual Publisher publisher { get; set; }
         public virtual List<Book_Tag> Tags { get; set; }
+        public virtual List<RateBook> RateBooks { get; set; }
     }
 }

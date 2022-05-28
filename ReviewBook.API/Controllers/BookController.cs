@@ -21,7 +21,6 @@ namespace ReviewBook.API.Controllers
             _userService = userService;
         }
 
-
         [HttpGet]
         public ActionResult<IEnumerable<Book>> GetAllBooks()
         {
@@ -48,7 +47,7 @@ namespace ReviewBook.API.Controllers
                     Book_Tag k = new Book_Tag();
                     k.ID_Book = newBook.Id;
                     k.ID_Tag = value.List_ID_Tags[i];
-                    _BookService.CreateBookTag(k);
+                    var a = _BookService.CreateBookTag(k);
                 }
                 return Ok(_BookService.GetBookById(newBook.Id));
             }

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ReviewBook.API.Data;
 using ReviewBook.API.Data.Entities;
 
@@ -30,12 +31,18 @@ namespace ReviewBook.API.Services
 
         public List<Publisher> GetAllPublishers()
         {
-            return _context.Publishers.ToList();
+            return _context.Publishers
+            .Include(a => a.Books)
+            .AsNoTracking()
+            .ToList();
         }
 
         public Publisher? GetPublisherById(int ID)
         {
-            return _context.Publishers.FirstOrDefault(p => p.ID == ID);
+            return _context.Publishers
+            .Include(a => a.Books)
+            .AsNoTracking()
+            .FirstOrDefault(p => p.ID == ID);
         }
 
         public Publisher? UpdatePublisher(Publisher publisher)

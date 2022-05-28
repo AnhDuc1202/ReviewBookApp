@@ -18,7 +18,7 @@ namespace ReviewBook.API.Services
         public Propose? UpdatePropose(Propose propose);
         public bool DeletePropose(int ID);
 
-        public Book_Tag CreateBookTag(Book_Tag book_Tag);
+        public Book_Tag? CreateBookTag(Book_Tag book_Tag);
         public List<Book_Tag> GetAllBookTagsByIdBook(int ID);
         public bool DeleteBookTag(int ID);
 

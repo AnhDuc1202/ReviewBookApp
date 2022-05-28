@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ReviewBook.API.Data;
 using ReviewBook.API.Data.Entities;
 
@@ -30,12 +31,20 @@ namespace ReviewBook.API.Services
 
         public List<Tag> GetAllTags()
         {
-            return _context.Tags.ToList();
+            return _context.Tags
+            .Include(a => a.Books)
+            .ThenInclude(b => b.book)
+            .AsNoTracking()
+            .ToList();
         }
 
         public Tag? GetTagById(int ID)
         {
-            return _context.Tags.FirstOrDefault(p => p.ID == ID);
+            return _context.Tags
+            .Include(a => a.Books)
+            .ThenInclude(b => b.book)
+            .AsNoTracking()
+            .FirstOrDefault(p => p.ID == ID);
         }
 
         public Tag? UpdateTag(Tag tag)
