@@ -93,5 +93,74 @@ namespace ReviewBook.API.Services
         {
             return this.context.Accounts.FirstOrDefault(x => x.ID == id);
         }
+
+        public bool Follow(UserFollowDTOs value)
+        {
+            Follow current = this.context.Follows.FirstOrDefault(f => f.ID_Following == value.IdFollowing || f.ID_Follower == value.IdFollower);
+            if(current != null){
+                this.context.Follows.Remove(current);
+                this.context.SaveChanges();
+                return false;
+            }
+            current = new Follow();
+            current.ID_Following = value.IdFollowing;
+            current.ID_Follower = value.IdFollower;
+            this.context.Follows.Add(current);
+            this.context.SaveChanges();
+            return true;
+        }
+
+        public MyBooks AddMyBook(UserAddMyBookDTOs value)
+        {
+            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Book == value.ID_Book);
+            if(current != null)
+                return null;
+            current = new MyBooks();
+            current.ID_Acc = value.ID_Account;
+            current.ID_Book = value.ID_Book;
+            current.Status = false;
+            this.context.myBooks.Add(current);
+            this.context.SaveChanges();
+            return current;
+        }
+
+        public MyBooks EditBookStatus(UserEditBookStatusDTOs value)
+        {
+            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Book == value.ID_Book);
+            if(current == null)
+                return null;
+            if (value.selectIndex == 1)
+                current.Status = false;
+            else
+                current.Status = true;
+            this.context.SaveChanges();
+            return current;
+        }
+
+        public List<MyBooks> GetAllMyBooks()
+        {
+            List<MyBooks> current = this.context.myBooks.ToList();
+            if(current.Count == 0)
+                return null;
+            return this.context.myBooks.Include(a => a.Acc).Include(b => b.book).ToList();
+        }
+
+        public MyBooks GetMyBookById(int id)
+        {
+            MyBooks current = this.context.myBooks.Include(a => a.book).FirstOrDefault(m => m.ID_Book == id);
+            if (current == null)
+                return null;
+            return current;
+        }
+
+        public bool DeleteBookById(int id)
+        {
+            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID == id);
+            if (current == null)
+                return false;
+            this.context.myBooks.Remove(current);
+            this.context.SaveChanges();
+            return true;
+        }
     }
 }

@@ -18,5 +18,17 @@ namespace ReviewBook.API.Services
         // public Review writeReview(UserWriteReviewDTOs review);
 
         public List<Book> searchForBookOrAuthor(String bookOrAuthor);
+
+        public bool Follow(UserFollowDTOs value);
+
+        public MyBooks AddMyBook(UserAddMyBookDTOs value);
+
+        public MyBooks EditBookStatus(UserEditBookStatusDTOs value);
+
+        public List<MyBooks> GetAllMyBooks();
+
+        public MyBooks GetMyBookById(int id);
+
+        public bool DeleteBookById(int id);
     }
 }
