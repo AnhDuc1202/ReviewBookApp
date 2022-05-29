@@ -30,7 +30,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_AuthorService.GetAllAuthors());
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -48,7 +49,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_AuthorService.CreateAuthor(value.toAuthorEntity()));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -59,7 +61,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_AuthorService.UpdateAuthor(value.toAuthorEntity(id)));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+            statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -70,7 +73,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_AuthorService.DeleteAuthor(id));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
     }
 }

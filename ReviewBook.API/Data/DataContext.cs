@@ -34,12 +34,12 @@ namespace ReviewBook.API.Data
             builder.Entity<Follow>(e =>
             {
                 e.HasOne(c => c.Following)
-                .WithMany(d => d.myFollowings)
+                .WithMany(d => d.myFollowers)
                 .HasForeignKey("ID_Following")
                 .OnDelete(DeleteBehavior.NoAction);
 
                 e.HasOne(c => c.Follower)
-                .WithMany(d => d.myFollowers)
+                .WithMany(d => d.myFollowings)
                 .HasForeignKey("ID_Follower")
                 .OnDelete(DeleteBehavior.NoAction);
             });

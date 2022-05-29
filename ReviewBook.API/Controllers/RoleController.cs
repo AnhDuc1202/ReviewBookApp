@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_roleService.GetAllRoles());
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpGet("{id}")]
@@ -39,7 +41,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_roleService.GetRoleById(id));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpPost]
@@ -49,7 +52,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_roleService.CreateRole(new Role(value.RoleName)));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpPut("{id}")]
@@ -63,9 +67,11 @@ namespace ReviewBook.API.Controllers
                 role.ID = id;
                 var kq = _roleService.UpdateRole(role);
                 if (kq != null) return Ok(kq);
-                return BadRequest("that bai");
+                return Problem("Cập nhật thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpDelete("{id}")]
@@ -79,7 +85,8 @@ namespace ReviewBook.API.Controllers
                 if (kq) return Ok();
                 return BadRequest();
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
     }
 }

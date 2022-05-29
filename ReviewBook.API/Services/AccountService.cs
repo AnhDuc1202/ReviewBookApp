@@ -23,8 +23,12 @@ namespace ReviewBook.API.Services
             return account;
         }
 
-        public Follow CreateFollow(Follow follow)
+        public Follow? CreateFollow(Follow follow)
         {
+            var acc1 = GetAccountById(follow.ID_Follower);
+            var acc2 = GetAccountById(follow.ID_Following);
+            if (acc1 == null || acc2 == null || acc1.ID == acc2.ID)
+                return null;
             _context.Follows.Add(follow);
             _context.SaveChanges();
             return follow;
@@ -39,9 +43,9 @@ namespace ReviewBook.API.Services
             return true;
         }
 
-        public bool DeleteFollow(int ID)
+        public bool DeleteFollow(Follow follow)
         {
-            var currentFollow = _context.Follows.FirstOrDefault(p => p.ID == ID);
+            var currentFollow = GetFollowByIdAccFollowerAndFollowing(follow.ID_Follower, follow.ID_Following);
             if (currentFollow == null) return false;
             _context.Follows.Remove(currentFollow);
             _context.SaveChanges();
@@ -90,6 +94,12 @@ namespace ReviewBook.API.Services
             .ToList();
             accs.ForEach(c => c.Password = string.Empty);
             return accs;
+        }
+
+        public Follow? GetFollowByIdAccFollowerAndFollowing(int ID_Follower, int ID_Following)
+        {
+            return _context.Follows
+            .FirstOrDefault(a => a.ID_Follower == ID_Follower && a.ID_Following == ID_Following);
         }
 
         public Account? UpdateInforAccount(Account account)

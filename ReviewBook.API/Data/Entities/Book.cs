@@ -22,11 +22,15 @@ namespace ReviewBook.API.Data.Entities
         public int PublishedYear { get; set; }
         public byte[]? Picture { get; set; }
         public String description { get; set; }
+        
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual List<MyBooks> Accounts { get; set; }
         public virtual List<Review> reviews { get; set; }
         public virtual Author author { get; set; }
         public virtual Publisher publisher { get; set; }
         public virtual List<Book_Tag> Tags { get; set; }
+
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual List<RateBook> RateBooks { get; set; }
     }
 }

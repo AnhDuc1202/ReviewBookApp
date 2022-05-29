@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,12 +50,17 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == value.ID_Acc)
             {
                 var b = _BookService.GetBookById(value.ID_Book);
-                if (b == null) return BadRequest("sách không còn tồn tại");
+                if (b == null)
+                    return Problem("Sách không tồn tại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 var r = _rateBookService.CreateOrUpdateRateBook(value.toEntitiesRateBook());
-                if (r == null) return BadRequest("đánh giá số sao thất bại");
+                if (r == null)
+                    return Problem("đánh giá số sao thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(r);
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpGet("RateAvg/{id}")]
@@ -73,12 +79,17 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == value.ID_Acc)
             {
                 var b = _BookService.GetBookById(value.ID_Book);
-                if (b == null) return BadRequest("sách không còn tồn tại");
+                if (b == null)
+                    return Problem("Sách không tồn tại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 var r = _reviewService.CreateReview(value.toEntitiesReviewBook());
-                if (r == null) return BadRequest("bình luận thất bại");
+                if (r == null)
+                    return Problem("Bình luận thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(r);
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("Review/{id}")]
@@ -89,10 +100,13 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == value.ID_Acc)
             {
                 var r = _reviewService.UpdateReview(value.toEntitiesReviewBook(id));
-                if (r == null) return BadRequest("cập nhật bình luận thất bại");
+                if (r == null)
+                    return Problem("Bình luận thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(r);
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("Review/{id}")]
@@ -104,7 +118,8 @@ namespace ReviewBook.API.Controllers
             {
                 return Ok(_reviewService.DeleteReview(id));
             }
-            return BadRequest("Không đủ quyền hoặc id review không tồn tại");
+            return Problem("Không đủ quyền. Phải tài khoản chính chủ. Hoặc đánh giá không tồn tại",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -116,12 +131,17 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == value.ID_Acc)
             {
                 var b = _reviewService.GetReviewById(value.Id_parent);
-                if (b == null) return BadRequest("đánh giá bạn trả lời không tồn tại");
+                if (b == null)
+                    return Problem("Đánh giá không tồn tại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 var r = _reviewService.CreateReviewChildren(value.toEntitiesReviewChildren());
-                if (r == null) return BadRequest("trả lời bình luận thất bại");
+                if (r == null)
+                    return Problem("Trả lời bình luận thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(r);
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
+            statusCode: (int)HttpStatusCode.BadRequest);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("Review/Reply/{id}")]
@@ -132,10 +152,13 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == value.ID_Acc)
             {
                 var r = _reviewService.UpdateReviewChildren(value.toEntitiesReviewChildren(id));
-                if (r == null) return BadRequest("cập nhật bình luận thất bại");
+                if (r == null)
+                    return Problem("Cập nhật thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(r);
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("Review/Reply/{id}")]
@@ -147,7 +170,8 @@ namespace ReviewBook.API.Controllers
             {
                 return Ok(_reviewService.DeleteReviewChildren(id));
             }
-            return BadRequest("Không đủ quyền hoặc id review không tồn tại");
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ. Hoặc đánh giá không tồn tại",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
 
@@ -170,7 +194,8 @@ namespace ReviewBook.API.Controllers
                 }
                 return Ok(_BookService.GetBookById(newBook.Id));
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -200,7 +225,8 @@ namespace ReviewBook.API.Controllers
                 }
                 return Ok(_BookService.GetBookById(book.Id));
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+            statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -211,7 +237,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_BookService.DeleteBook(id));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
         [HttpGet("Propose")]
         public ActionResult<IEnumerable<Propose>> GetAllProposes()
@@ -220,7 +247,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_BookService.GetAllProposes());
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -231,7 +259,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_BookService.GetProposeById(id));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("Propose/ProposeByIdUser/{id}")]
@@ -241,7 +270,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 2 && acc.ID == id)
                 return Ok(_BookService.GetProposeByIdUser(id));
-            return BadRequest("Chỉ User mới xem đề xuất sách của mình");
+            return Problem("Không đủ quyền. Phải là user và tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Propose")]
@@ -261,7 +291,8 @@ namespace ReviewBook.API.Controllers
                 }
                 return Ok(_BookService.GetProposeById(newPropose.ID));
             }
-            return BadRequest("Chỉ User mới đề xuất sách");
+            return Problem("Không đủ quyền. Phải là user",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -291,7 +322,8 @@ namespace ReviewBook.API.Controllers
                 }
                 return Ok(_BookService.GetProposeById(p.ID));
             }
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

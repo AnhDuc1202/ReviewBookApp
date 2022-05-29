@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1) return Ok(_AccountService.GetAllAccounts());
 
-            return BadRequest();
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -48,7 +50,8 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == id || acc.ID_Role == 1)
                 return Ok(_AccountService.GetAccountById(id));
 
-            return BadRequest();
+            return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
 
@@ -64,7 +67,9 @@ namespace ReviewBook.API.Controllers
         public ActionResult<Account> Post([FromBody] CreateAccountDTOs value)
         {
             var acc = _AccountService.CreateAccount(value.toAccountEntity());
-            if (acc == null) return BadRequest();
+            if (acc == null)
+                return Problem("Tạo tài khoản thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
             return Ok(acc);
         }
 
@@ -78,10 +83,13 @@ namespace ReviewBook.API.Controllers
             {
 
                 var newacc = _AccountService.CreateAccount(value.toAccountEntity());
-                if (newacc == null) return BadRequest();
+                if (newacc == null)
+                    return Problem("Tạo tài khoản thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(newacc);
             }
-            return BadRequest();
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -94,12 +102,16 @@ namespace ReviewBook.API.Controllers
             {
                 string pass = _AccountService.GetAccountById(id).Password;
                 if (pass != value.CurrentPassword)
-                    return BadRequest("Mật khẩu cũ không đúng");
+                    return Problem("Mật khẩu cũ không đúng",
+                    statusCode: (int)HttpStatusCode.BadRequest);
                 var kq = _AccountService.UpdatePasswordAccount(value.toAccountEntity(id));
-                if (kq == null) return BadRequest("cập nhật thất bại");
+                if (kq == null)
+                    return Problem("Cập nhật thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(kq);
             }
-            return BadRequest("Bạn không có quyền thay đổi mật khẩu tài khoản này");
+            return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
 
@@ -112,11 +124,13 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == id || acc.ID_Role == 1)
             {
                 var kq = _AccountService.UpdateInforAccount(value.toAccountEntity(id));
-                if (kq == null) return BadRequest();
+                if (kq == null) return Problem("cập nhật thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(kq);
             }
 
-            return BadRequest();
+            return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
@@ -127,11 +141,50 @@ namespace ReviewBook.API.Controllers
             if (acc.ID == id || acc.ID_Role == 1)
             {
                 var kq = _AccountService.DeleteAccount(id);
-                if (!kq) return BadRequest();
-                return Ok(kq);
+                if (!kq)
+                    return Problem("Xóa thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                return Ok();
             }
-            return BadRequest();
+            return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
+            statusCode: (int)HttpStatusCode.BadRequest);
+        }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("Follow")]
+        public ActionResult<Follow> PostA([FromBody] FollowDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == value.ID_Follower)
+            {
+                var newfollow = _AccountService.CreateFollow(value.toEntitiesFollow());
+                if (newfollow == null)
+                    return Problem("Follow thất bại do tài khoản không tồn tại hoặc bạn follow chính mình",
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                return Ok(newfollow);
+            }
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
+                statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("Follow")]
+        public ActionResult DeleteF([FromBody] FollowDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID == value.ID_Follower)
+            {
+                var kq = _AccountService.DeleteFollow(value.toEntitiesFollow());
+                if (!kq)
+                    return Problem("Hủy Follow thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                return Ok();
+            }
+            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
+            statusCode: (int)HttpStatusCode.BadRequest);
         }
     }
 }

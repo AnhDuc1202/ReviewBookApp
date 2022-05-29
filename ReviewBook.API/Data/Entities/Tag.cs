@@ -19,6 +19,8 @@ namespace ReviewBook.API.Data.Entities
         [StringLength(2048)]
         public string? Description { get; set; }
         public virtual List<Book_Tag> Books { get; set; }
+
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual List<Propose_Tag> Proposes { get; set; }
     }
 }

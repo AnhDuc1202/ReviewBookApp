@@ -9,14 +9,12 @@ namespace ReviewBook.API.DTOs
         public int ID_Acc { get; set; }
         public int ID_Book { get; set; }
         public string Content { get; set; }
-        public DateTime time { get; set; }
         public Review toEntitiesReviewBook()
         {
             Review r = new Review();
             r.ID_Acc = ID_Acc;
             r.ID_Book = ID_Book;
             r.Content = Content;
-            r.Date = time;
             return r;
         }
         public Review toEntitiesReviewBook(int id)
@@ -26,7 +24,6 @@ namespace ReviewBook.API.DTOs
             r.ID_Acc = ID_Acc;
             r.ID_Book = ID_Book;
             r.Content = Content;
-            r.Date = time;
             return r;
         }
     }

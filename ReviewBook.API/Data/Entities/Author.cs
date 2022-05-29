@@ -20,6 +20,8 @@ namespace ReviewBook.API.Data.Entities
         public string? Description { get; set; }
 
         public virtual List<Book> Books { get; set; }
+
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual List<Propose> Proposes { get; set; }
     }
 }

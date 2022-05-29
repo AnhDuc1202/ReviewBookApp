@@ -21,7 +21,7 @@ namespace ReviewBook.API.Data.Entities
         public int ID { get; set; }
         [StringLength(64)]
         public string NameRole { get; set; }
-
+        
         public virtual List<Account> Accounts { get; set; }
     }
 }

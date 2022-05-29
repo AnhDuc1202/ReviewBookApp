@@ -17,6 +17,7 @@ namespace ReviewBook.API.Data.Entities
         [StringLength(2048)]
         public string Content { get; set; }
         public DateTime Date { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Account Account { get; set; }
         public virtual Book Book { get; set; }
         public virtual List<ReviewChildren> reviewChildrens { get; set; }

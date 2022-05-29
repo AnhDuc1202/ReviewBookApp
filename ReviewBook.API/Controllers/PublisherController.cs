@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_PublisherService.GetAllPublishers());
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpGet("{id}")]
@@ -45,7 +47,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_PublisherService.CreatePublisher(value.toAuthorEntity()));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpPut("{id}")]
@@ -55,7 +58,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_PublisherService.UpdatePublisher(value.toPublisherEntity(id)));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [HttpDelete("{id}")]
@@ -65,7 +69,8 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_PublisherService.DeletePublisher(id));
-            return BadRequest("Không đủ quyền");
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
     }
 }

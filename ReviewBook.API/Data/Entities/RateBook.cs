@@ -11,6 +11,7 @@ namespace ReviewBook.API.Data.Entities
         public int ID_Acc { get; set; }
         public int ID_Book { get; set; }
         public int Rate { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Account Account { get; set; }
         public virtual Book Book { get; set; }
     }
