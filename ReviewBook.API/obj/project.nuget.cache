@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "hv1ziTTjBf4UyIs71JcpR/YBcmx4nIHtfuDoaj/SLQRAj191xGxLLRvGr2D8n1KxfPqk/730lFyW5rSwPaYh+Q==",
+  "dgSpecHash": "cPJKIDetk+Xj5s1fJKj6NhAuTyqXubvVkgCp4BNbfzAvR8JMstLYaXTtUan7c2OOEqF2A+NqzWPIGkZMgoCSZQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Admin\\vs_code\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
   "expectedPackageFiles": [
@@ -30,6 +30,7 @@
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\6.10.0\\microsoft.identitymodel.protocols.openidconnect.6.10.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.identitymodel.tokens\\6.18.0\\microsoft.identitymodel.tokens.6.18.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\npgsql\\6.0.4\\npgsql.6.0.4.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\6.0.4\\npgsql.entityframeworkcore.postgresql.6.0.4.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\swashbuckle.aspnetcore\\6.2.3\\swashbuckle.aspnetcore.6.2.3.nupkg.sha512",

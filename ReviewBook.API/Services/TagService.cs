@@ -37,12 +37,18 @@ namespace ReviewBook.API.Services
             .AsNoTracking()
             .ToList();
         }
+        public List<Tag> GetAllTagsNoBook()
+        {
+            return _context.Tags
+            .AsNoTracking()
+            .ToList();
+        }
 
         public Tag? GetTagById(int ID)
         {
             return _context.Tags
             .Include(a => a.Books)
-            .ThenInclude(b => b.book)
+                .ThenInclude(a1 => a1.book)
             .AsNoTracking()
             .FirstOrDefault(p => p.ID == ID);
         }

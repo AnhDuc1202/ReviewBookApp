@@ -7,7 +7,7 @@ namespace ReviewBook.API.Data.Entities
         public Review()
         {
             Content = string.Empty;
-            Date = DateTime.Now;
+            Date = DateTime.UtcNow;
         }
 
         [Key]
@@ -16,9 +16,11 @@ namespace ReviewBook.API.Data.Entities
         public int ID_Book { get; set; }
         [StringLength(2048)]
         public string Content { get; set; }
+        public int Rate { get; set; }
         public DateTime Date { get; set; }
-        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Account Account { get; set; }
+
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Book Book { get; set; }
         public virtual List<ReviewChildren> reviewChildrens { get; set; }
     }

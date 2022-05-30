@@ -30,7 +30,9 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_TagService.GetAllTags());
-            return Problem("Không đủ quyền. Phải là admin",
+            else if (acc.ID_Role == 2)
+                return Ok(_TagService.GetAllTagsNoBook());
+            return Problem("Role của bạn không đủ quyền",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
 
@@ -41,7 +43,9 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
                 return Ok(_TagService.GetTagById(id));
-            return Problem("Không đủ quyền. Phải là admin",
+            else if (acc.ID_Role == 2)
+                return Ok(_TagService.GetTagById(id));
+            return Problem("Role của bạn không đủ quyền",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
 
@@ -73,7 +77,14 @@ namespace ReviewBook.API.Controllers
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
-                return Ok(_TagService.DeleteTag(id));
+            {
+                var kq = _TagService.DeleteTag(id);
+                if (kq)
+                    return Ok();
+                return Problem("Xóa thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            }
+
             return Problem("Không đủ quyền. Phải là admin",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }

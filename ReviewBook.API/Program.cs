@@ -58,7 +58,6 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRateBookService, RateBookService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IStatisticalService, StatisticalService>();
 

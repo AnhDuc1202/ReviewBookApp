@@ -10,7 +10,6 @@ namespace ReviewBook.API.Data.Entities
             Accounts = new List<MyBooks>();
             reviews = new List<Review>();
             Tags = new List<Book_Tag>();
-            RateBooks = new List<RateBook>();
             description = String.Empty;
         }
         [Key]
@@ -30,7 +29,5 @@ namespace ReviewBook.API.Data.Entities
         public virtual Publisher publisher { get; set; }
         public virtual List<Book_Tag> Tags { get; set; }
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        public virtual List<RateBook> RateBooks { get; set; }
     }
 }

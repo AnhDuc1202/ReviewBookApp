@@ -14,16 +14,13 @@ namespace ReviewBook.API.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookService _BookService;
-        private readonly IRateBookService _rateBookService;
         private readonly IUserService _userService;
         private readonly IReviewService _reviewService;
 
-        public BookController(IBookService bookService,
-        IRateBookService rateBookService, IUserService userService
+        public BookController(IBookService bookService, IUserService userService
         , IReviewService reviewService)
         {
             _BookService = bookService;
-            _rateBookService = rateBookService;
             _userService = userService;
             _reviewService = reviewService;
         }
@@ -40,73 +37,42 @@ namespace ReviewBook.API.Controllers
             return Ok(_BookService.GetBookById(id));
         }
 
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("CreateOrUpdateRate")]
-        public ActionResult<RateBook> PostRate([FromBody] RateBookDTOs value)
-        {
-            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-            var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == value.ID_Acc)
-            {
-                var b = _BookService.GetBookById(value.ID_Book);
-                if (b == null)
-                    return Problem("Sách không tồn tại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                var r = _rateBookService.CreateOrUpdateRateBook(value.toEntitiesRateBook());
-                if (r == null)
-                    return Problem("đánh giá số sao thất bại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok(r);
-            }
-            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
-                statusCode: (int)HttpStatusCode.BadRequest);
-        }
-
         [HttpGet("RateAvg/{id}")]
         public ActionResult<IEnumerable<BookAvgDTOs>> GetAllRateBookbyID(int id)
         {
-            BookAvgDTOs b = new BookAvgDTOs(id, _rateBookService.GetAllRateBookByIdBook(id));
+            BookAvgDTOs b = new BookAvgDTOs(id, _BookService.GetRateAvgBookByIdBook(id));
             return Ok(b);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Review")]
-        public ActionResult<Review> PostReview([FromBody] ReviewDTOs value)
+        public ActionResult<Review> PostReview([FromBody] CreateReviewDTOs value)
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == value.ID_Acc)
-            {
-                var b = _BookService.GetBookById(value.ID_Book);
-                if (b == null)
-                    return Problem("Sách không tồn tại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                var r = _reviewService.CreateReview(value.toEntitiesReviewBook());
-                if (r == null)
-                    return Problem("Bình luận thất bại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok(r);
-            }
-            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
-                statusCode: (int)HttpStatusCode.BadRequest);
+
+            var b = _BookService.GetBookById(value.ID_Book);
+            if (b == null)
+                return Problem("Sách không tồn tại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            var r = _reviewService.CreateReview(value.toEntitiesReviewBook(acc.ID));
+            if (r == null)
+                return Problem("Bình luận thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(r);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("Review/{id}")]
-        public ActionResult<Review> PutReview(int id, [FromBody] ReviewDTOs value)
+        public ActionResult<Review> PutReview(int id, [FromBody] updateReviewDTOs value)
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == value.ID_Acc)
-            {
-                var r = _reviewService.UpdateReview(value.toEntitiesReviewBook(id));
-                if (r == null)
-                    return Problem("Bình luận thất bại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok(r);
-            }
-            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
-                statusCode: (int)HttpStatusCode.BadRequest);
+            var r = _reviewService.UpdateReview(value.toEntitiesReviewBook(id, acc.ID));
+            if (r == null)
+                return Problem("cập nhật bình luận thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(r);
+
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("Review/{id}")]
@@ -114,51 +80,42 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == _reviewService.GetReviewById(id).ID_Acc)
-            {
-                return Ok(_reviewService.DeleteReview(id));
-            }
+            var kq = _reviewService.DeleteReview(id, acc.ID);
+            if (kq)
+                return Ok();
             return Problem("Không đủ quyền. Phải tài khoản chính chủ. Hoặc đánh giá không tồn tại",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Review/Reply")]
-        public ActionResult<ReviewChildren> PostReviewReply([FromBody] ReviewChildrenDTOs value)
+        public ActionResult<ReviewChildren> PostReviewReply([FromBody] CreateReviewChildrenDTOs value)
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == value.ID_Acc)
-            {
-                var b = _reviewService.GetReviewById(value.Id_parent);
-                if (b == null)
-                    return Problem("Đánh giá không tồn tại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                var r = _reviewService.CreateReviewChildren(value.toEntitiesReviewChildren());
-                if (r == null)
-                    return Problem("Trả lời bình luận thất bại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok(r);
-            }
-            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
-            statusCode: (int)HttpStatusCode.BadRequest);
+
+            var b = _reviewService.GetReviewById(value.Id_parent);
+            if (b == null)
+                return Problem("Đánh giá bạn trả lời không còn tồn tại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            var r = _reviewService.CreateReviewChildren(value.toEntitiesReviewChildren(acc.ID));
+            if (r == null)
+                return Problem("Trả lời bình luận thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(r);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("Review/Reply/{id}")]
-        public ActionResult<ReviewChildren> PutReviewReply(int id, [FromBody] ReviewChildrenDTOs value)
+        public ActionResult<ReviewChildren> PutReviewReply(int id, [FromBody] UpdateReviewChildrenDTOs value)
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == value.ID_Acc)
-            {
-                var r = _reviewService.UpdateReviewChildren(value.toEntitiesReviewChildren(id));
-                if (r == null)
-                    return Problem("Cập nhật thất bại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok(r);
-            }
-            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
-                statusCode: (int)HttpStatusCode.BadRequest);
+
+            var r = _reviewService.UpdateReviewChildren(value.toEntitiesReviewChildren(id, acc.ID));
+            if (r == null)
+                return Problem("Cập nhật thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(r);
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("Review/Reply/{id}")]
@@ -166,15 +123,12 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == _reviewService.GetReviewChildrenById(id).ID_Acc)
-            {
-                return Ok(_reviewService.DeleteReviewChildren(id));
-            }
+            var kq = _reviewService.DeleteReviewChildren(id, acc.ID);
+            if (kq)
+                return Ok();
             return Problem("Không đủ quyền. Phải là tài khoản chính chủ. Hoặc đánh giá không tồn tại",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
-
-
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]

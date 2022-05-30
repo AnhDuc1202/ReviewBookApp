@@ -87,9 +87,6 @@ namespace ReviewBook.API.Services
                 .ThenInclude(a1 => a1.tag)
             .Include(b => b.author)
             .Include(c => c.publisher)
-            .Include(d => d.reviews)
-                .ThenInclude(d1 => d1.reviewChildrens)
-                .ThenInclude(d2 => d2.Account)
             .AsNoTracking()
             .ToList();
         }
@@ -112,14 +109,25 @@ namespace ReviewBook.API.Services
 
         public Book? GetBookById(int ID)
         {
+            // return _context.Books
+            // .Include(a => a.Tags)
+            //     .ThenInclude(a1 => a1.tag)
+            // .Include(b => b.author)
+            // .Include(c => c.publisher)
+            // .Include(d => d.reviews)
+            //     .ThenInclude(d1 => d1.reviewChildrens)
+            //     .ThenInclude(d2 => d2.Account)
+            // .AsNoTracking()
+            // .FirstOrDefault(p => p.Id == ID);
+
             return _context.Books
             .Include(a => a.Tags)
                 .ThenInclude(a1 => a1.tag)
             .Include(b => b.author)
             .Include(c => c.publisher)
             .Include(d => d.reviews)
-                .ThenInclude(d1 => d1.reviewChildrens)
-                .ThenInclude(d2 => d2.Account)
+            .Include(k => k.reviews)
+                .ThenInclude(e1 => e1.reviewChildrens)
             .AsNoTracking()
             .FirstOrDefault(p => p.Id == ID);
         }
@@ -144,6 +152,20 @@ namespace ReviewBook.API.Services
         {
             return _context.Proposes.Where(p => p.Status == false && p.ID_Acc_Request == ID)
             .Include(a => a.Tags).ToList();
+        }
+
+        public double GetRateAvgBookByIdBook(int idBook)
+        {
+            double rateAvg = 0;
+
+            var rateBooks = _context.Reviews.Where(c => c.ID_Book == idBook).ToList();
+            double sum = 0;
+            if (rateBooks.Count() == 0) return rateAvg;
+            foreach (Review b in rateBooks)
+            {
+                sum += b.Rate;
+            }
+            return sum / rateBooks.Count();
         }
 
         public Book? UpdateBook(Book book)

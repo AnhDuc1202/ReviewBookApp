@@ -8,12 +8,12 @@ namespace ReviewBook.API.Services
     public class StatisticalService : IStatisticalService
     {
         private readonly DataContext _context;
-        private readonly IRateBookService _rateBookService;
+        private readonly IBookService _bookService;
 
-        public StatisticalService(DataContext context, IRateBookService rateBookService)
+        public StatisticalService(DataContext context, IBookService bookService)
         {
             _context = context;
-            _rateBookService = rateBookService;
+            _bookService = bookService;
         }
 
         public List<RateStatisticalDTOs> RateStatistical(int n)
@@ -22,7 +22,7 @@ namespace ReviewBook.API.Services
             var books = _context.Books.ToList();
             foreach (Book b in books)
             {
-                double avg = _rateBookService.GetAllRateBookByIdBook(b.Id);
+                double avg = _bookService.GetRateAvgBookByIdBook(b.Id);
                 RateStatisticalDTOs k = new RateStatisticalDTOs(b, avg);
                 kq.Add(k);
             }

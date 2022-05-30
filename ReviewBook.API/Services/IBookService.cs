@@ -27,5 +27,7 @@ namespace ReviewBook.API.Services
         public List<Propose_Tag> GetAllProposeTagsByIdProppose(int ID);
         public bool DeleteProposeTag(int ID);
 
+        public double GetRateAvgBookByIdBook(int idBook);
+
     }
 }
