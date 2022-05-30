@@ -1335,19 +1335,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\thong\\.nuget\\packages\\": {}
+    "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "G:\\study_online\\SOA\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\vs_code\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
       "projectName": "ReviewBook.API",
-      "projectPath": "G:\\study_online\\SOA\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
-      "packagesPath": "C:\\Users\\thong\\.nuget\\packages\\",
-      "outputPath": "G:\\study_online\\SOA\\ReviewBookApp\\ReviewBook.API\\obj\\",
+      "projectPath": "C:\\Users\\Admin\\vs_code\\ReviewBookApp\\ReviewBook.API\\ReviewBook.API.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Admin\\vs_code\\ReviewBookApp\\ReviewBook.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\thong\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"

@@ -157,16 +157,13 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == value.ID_Follower)
-            {
-                var newfollow = _AccountService.CreateFollow(value.toEntitiesFollow());
-                if (newfollow == null)
-                    return Problem("Follow thất bại do tài khoản không tồn tại hoặc bạn follow chính mình",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok(newfollow);
-            }
-            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
-                statusCode: (int)HttpStatusCode.BadRequest);
+
+            var newfollow = _AccountService.CreateFollow(value.toEntitiesFollow(acc.ID));
+            if (newfollow == null)
+                return Problem("Follow thất bại do tài khoản không tồn tại hoặc bạn follow chính mình",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(newfollow);
+
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -175,16 +172,13 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == value.ID_Follower)
-            {
-                var kq = _AccountService.DeleteFollow(value.toEntitiesFollow());
-                if (!kq)
-                    return Problem("Hủy Follow thất bại",
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok();
-            }
-            return Problem("Không đủ quyền. Phải là tài khoản chính chủ",
-            statusCode: (int)HttpStatusCode.BadRequest);
+
+            var kq = _AccountService.DeleteFollow(value.toEntitiesFollow(acc.ID));
+            if (!kq)
+                return Problem("Hủy Follow thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok();
+
         }
     }
 }

@@ -75,12 +75,6 @@ namespace ReviewBook.API.Services
             acc.ID_Role = Role;
             return acc;
         }
-        public Account CreateAccount(Account account)
-        {
-            this.context.Accounts.Add(account);
-            this.context.SaveChanges();
-            return account;
-        }
 
         //Search book
         public List<Book> searchForBookOrAuthor(String bookOrAuthor)
@@ -94,68 +88,47 @@ namespace ReviewBook.API.Services
             return this.context.Accounts.FirstOrDefault(x => x.ID == id);
         }
 
-        public bool Follow(UserFollowDTOs value)
+        public MyBooks AddMyBook(MyBooks value)
         {
-            Follow current = this.context.Follows.FirstOrDefault(f => f.ID_Following == value.IdFollowing || f.ID_Follower == value.IdFollower);
-            if(current != null){
-                this.context.Follows.Remove(current);
-                this.context.SaveChanges();
-                return false;
-            }
-            current = new Follow();
-            current.ID_Following = value.IdFollowing;
-            current.ID_Follower = value.IdFollower;
-            this.context.Follows.Add(current);
+            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Book == value.ID_Book && m.ID_Acc == value.ID_Acc);
+            if (current != null || !(value.StatusBook == 1 || value.StatusBook == 2 || value.StatusBook == 3))
+                return null;
+            this.context.myBooks.Add(value);
             this.context.SaveChanges();
-            return true;
+            return value;
         }
 
-        public MyBooks AddMyBook(UserAddMyBookDTOs value)
+        public MyBooks EditBookStatus(MyBooks value)
         {
-            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Book == value.ID_Book);
-            if(current != null)
+            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Book == value.ID_Book && m.ID_Acc == value.ID_Acc);
+            if (current == null || !(value.StatusBook == 1 || value.StatusBook == 2 || value.StatusBook == 3))
                 return null;
-            current = new MyBooks();
-            current.ID_Acc = value.ID_Account;
-            current.ID_Book = value.ID_Book;
-            current.Status = false;
-            this.context.myBooks.Add(current);
+            current.StatusBook = value.StatusBook;
+            context.myBooks.Update(current);
             this.context.SaveChanges();
             return current;
         }
 
-        public MyBooks EditBookStatus(UserEditBookStatusDTOs value)
-        {
-            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Book == value.ID_Book);
-            if(current == null)
-                return null;
-            if (value.selectIndex == 1)
-                current.Status = false;
-            else
-                current.Status = true;
-            this.context.SaveChanges();
-            return current;
-        }
-
-        public List<MyBooks> GetAllMyBooks()
+        public List<MyBooks> GetAllMyBooksByIdAcc(int ID)
         {
             List<MyBooks> current = this.context.myBooks.ToList();
-            if(current.Count == 0)
+            if (current.Count == 0)
                 return null;
-            return this.context.myBooks.Include(a => a.Acc).Include(b => b.book).ToList();
+            return this.context.myBooks.Where(a => a.ID_Acc == ID).Include(b => b.book).AsNoTracking().ToList();
         }
 
-        public MyBooks GetMyBookById(int id)
+        public MyBooks GetMyBookByIdBook(MyBooks myBook)
         {
-            MyBooks current = this.context.myBooks.Include(a => a.book).FirstOrDefault(m => m.ID_Book == id);
+            MyBooks current = this.context.myBooks
+                .Include(a => a.book).FirstOrDefault(m => m.ID_Book == myBook.ID_Book && m.ID_Acc == myBook.ID_Acc);
             if (current == null)
                 return null;
             return current;
         }
 
-        public bool DeleteBookById(int id)
+        public bool DeleteBookById(MyBooks myBooks)
         {
-            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID == id);
+            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Acc == myBooks.ID_Acc && m.ID_Book==myBooks.ID_Book);
             if (current == null)
                 return false;
             this.context.myBooks.Remove(current);

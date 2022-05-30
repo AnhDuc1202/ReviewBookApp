@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ReviewBook.API.Models;
 using ReviewBook.API.Data.Entities;
 using Microsoft.Net.Http.Headers;
+using System.Net;
 
 namespace ReviewBook.API.Controllers
 {
@@ -34,59 +35,65 @@ namespace ReviewBook.API.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("UserFollow")]
-        public IActionResult Follow([FromBody] UserFollowDTOs value)
+        [HttpPost("MyBook")]
+        public ActionResult<MyBooks> AddMyBook([FromBody] UserAddMyBookDTOs value)
         {
-            // var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-
-            // var acc = _userService.jwtTokenToAccount(_bearer_token);
-            // if (acc.ID == value.IdFollowing)
-            // {
-                bool status = _userService.Follow(value);
-                return status ? Ok("Follow success!") : BadRequest("Unfollow success!");
-            // }
-            // return BadRequest("Không đủ quyền");
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            var kq = _userService.AddMyBook(value.toEntitiesMyBooks(acc.ID));
+            if (kq == null)
+                return Problem("Thêm sách vào mybook thất bại",
+                statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(kq);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("AddMyBook")]
-        public ActionResult<MyBooks> AddMyBook([FromBody] UserAddMyBookDTOs value){
-            if(_userService.AddMyBook(value) == null)
-                return BadRequest("This book is already added!");
-            return Ok(_userService.AddMyBook(value));
+        [HttpPut("MyBook")]
+        public ActionResult<MyBooks> EditBookStatus([FromBody] UserEditBookStatusDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            var kq = _userService.EditBookStatus(value.toEntitiesMyBooks(acc.ID));
+            if (kq == null)
+                return Problem("Cập nhật mybook thất bại",
+                statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(kq);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut("EditBookStatus")]
-        public ActionResult<MyBooks> EditBookStatus([FromBody] UserEditBookStatusDTOs value){
-            if(_userService.EditBookStatus(value) == null)
-                return BadRequest("This book is not added to your book yet!");
-            return Ok(_userService.EditBookStatus(value));
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("GetAllMyBooks")]
+        [HttpGet("MyBook")]
         public ActionResult<IEnumerable<MyBooks>> GetMyBooks()
         {
-            if(_userService.GetAllMyBooks() == null)
-                return Ok("There are nothing in your book!");
-            return Ok(_userService.GetAllMyBooks());
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            return Ok(_userService.GetAllMyBooksByIdAcc(acc.ID));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("GetMyBookById/{id}")]
+        [HttpGet("MyBookByIdBook/{id}")]
         public IActionResult GetMyBookById(int id)
         {
-            return Ok(_userService.GetMyBookById(id));
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            MyBooks myBooks = new MyBooks();
+            myBooks.ID_Acc = acc.ID;
+            myBooks.ID_Book = id;
+            return Ok(_userService.GetMyBookByIdBook(myBooks));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete("DeleteMyBookById/{id}")]
+        [HttpDelete("MyBookByIdBook/{id}")]
         public IActionResult DeleteBookById(int id)
         {
-            if(_userService.DeleteBookById(id) == false)
-                return BadRequest("There are no book with this id");
-            return Ok("Delete successfully!");
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            MyBooks myBooks = new MyBooks();
+            myBooks.ID_Acc = acc.ID;
+            myBooks.ID_Book = id;
+            if (_userService.DeleteBookById(myBooks) == false)
+                return Problem("Xóa sách khỏi mybook thất bại",
+                statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok();
         }
 
     }

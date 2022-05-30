@@ -12,6 +12,6 @@ namespace ReviewBook.API.Data.Entities
         [System.Text.Json.Serialization.JsonIgnore]
         public virtual Account Acc { get; set; }
         public virtual Book book { get; set; }
-        public bool Status { get; set; }
+        public int StatusBook { get; set; }
     }
 }

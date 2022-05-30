@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ReviewBook.API.Data;
 using ReviewBook.API.Services;
 
 namespace ReviewBook.API.Helpers
