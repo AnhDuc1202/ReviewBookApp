@@ -5,7 +5,7 @@ namespace ReviewBook.API.Services
 {
     public interface IBookService
     {
-        public List<Book> GetAllBooks();
+        public List<Book> GetAllBooksByPage(int page);
         public Book? GetBookById(int ID);
         public Book CreateBook(Book book);
         public Book? UpdateBook(Book book);

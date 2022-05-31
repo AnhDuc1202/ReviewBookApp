@@ -26,9 +26,11 @@ namespace ReviewBook.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Book>> GetAllBooks()
+        public ActionResult<IEnumerable<Book>> GetAllBooks(int page)
         {
-            return Ok(_BookService.GetAllBooks());
+            if (page < 1) return Problem("tham số page là số nguyên dương",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(_BookService.GetAllBooksByPage(page));
         }
 
         [HttpGet("{id}")]

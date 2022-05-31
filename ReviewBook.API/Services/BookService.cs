@@ -80,14 +80,18 @@ namespace ReviewBook.API.Services
             return true;
         }
 
-        public List<Book> GetAllBooks()
+        public List<Book> GetAllBooksByPage(int page)
         {
+            int n = page - 1;
+            int records = 10;
             return _context.Books
+            .OrderBy(k => k.Id)
             .Include(a => a.Tags)
                 .ThenInclude(a1 => a1.tag)
             .Include(b => b.author)
             .Include(c => c.publisher)
             .AsNoTracking()
+            .Skip(n * records).Take(records)
             .ToList();
         }
 
