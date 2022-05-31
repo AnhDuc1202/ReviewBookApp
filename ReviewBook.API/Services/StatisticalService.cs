@@ -54,5 +54,19 @@ namespace ReviewBook.API.Services
             List<ReviewStatisticalDTOs> kqcuoi = kq.OrderByDescending(o => o.reviewCount).Take(n).ToList();
             return kqcuoi;
         }
+
+        public List<ReadedStatisticalDTOs> ReadedStatistical(int n)
+        {
+            List<ReadedStatisticalDTOs> kq = new List<ReadedStatisticalDTOs>();
+            var books = _context.Books.ToList();
+            foreach (Book b in books)
+            {
+                long count = _context.myBooks.Where(c => c.ID_Book == b.Id && c.StatusBook == 3).Count();
+                ReadedStatisticalDTOs k = new ReadedStatisticalDTOs(b, count);
+                kq.Add(k);
+            }
+            List<ReadedStatisticalDTOs> kqcuoi = kq.OrderByDescending(o => o.readed).Take(n).ToList();
+            return kqcuoi;
+        }
     }
 }
