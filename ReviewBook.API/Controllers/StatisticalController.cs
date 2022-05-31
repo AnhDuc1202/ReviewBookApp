@@ -46,5 +46,18 @@ namespace ReviewBook.API.Controllers
             return Problem("Không đủ quyền. Phải là admin",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("Readed/{n}")]
+        public ActionResult<IEnumerable<ReadedStatisticalDTOs>> GetReaded(int n)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID_Role == 1)
+                return _statisticalService.ReadedStatistical(n);
+
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
+        }
     }
 }

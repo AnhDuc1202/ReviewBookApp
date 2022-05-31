@@ -6,5 +6,6 @@ namespace ReviewBook.API.Services
     {
         public List<RateStatisticalDTOs> RateStatistical(int n);
         public List<ReviewStatisticalDTOs> ReviewStatistical(int n);
+        public List<ReadedStatisticalDTOs> ReadedStatistical(int n);
     }
 }
