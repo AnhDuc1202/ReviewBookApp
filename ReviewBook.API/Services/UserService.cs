@@ -134,6 +134,7 @@ namespace ReviewBook.API.Services
             this.context.myBooks.Remove(current);
             this.context.SaveChanges();
             return true;
+            //alo
         }
     }
 }
