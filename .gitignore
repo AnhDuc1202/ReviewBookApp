@@ -1,2 +1,2 @@
-ReviewBook.API/bin/
-ReviewBook.API/obj/
+ReviewBook.API/bin/*
+ReviewBook.API/obj/*
