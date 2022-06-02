@@ -11,6 +11,7 @@ namespace ReviewBook.API.Data.Entities
             BookName = string.Empty;
             Status = false;
             Tags = new List<Propose_Tag>();
+            description = String.Empty;
         }
 
         [Key]
@@ -22,6 +23,7 @@ namespace ReviewBook.API.Data.Entities
         public int ID_Acc_Request { get; set; }
         public int PublishedYear { get; set; }
         public byte[]? Picture { get; set; }
+        public String description { get; set; }
         public bool Status { get; set; }
         public virtual Author? Author { get; set; }
         public virtual Publisher? Publisher { get; set; }
