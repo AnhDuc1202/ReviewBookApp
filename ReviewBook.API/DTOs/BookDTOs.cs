@@ -8,6 +8,9 @@ namespace ReviewBook.API.DTOs
         public int ID_Aut { get; set; }
         public int ID_Pub { get; set; }
         public int PublishedYear { get; set; }
+        public byte[]? Picture { get; set; }
+        public String description { get; set; }
+
         public List<int> List_ID_Tags { get; set; }
         public Book toBookEntity()
         {
@@ -16,6 +19,8 @@ namespace ReviewBook.API.DTOs
             b.ID_Aut = ID_Aut;
             b.ID_Pub = ID_Pub;
             b.PublishedYear = PublishedYear;
+            b.description = description;
+            b.Picture = Picture;
             return b;
         }
     }

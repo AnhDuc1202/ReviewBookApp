@@ -141,14 +141,26 @@ namespace ReviewBook.API.Services
 
         public Propose? GetProposeById(int ID)
         {
-            return _context.Proposes.Where(p => p.Status == false)
-            .Include(a => a.Tags).FirstOrDefault(p => p.ID == ID);
+            return _context.Proposes
+            .Where(p => p.Status == false)
+            .Include(a => a.Tags)
+                .ThenInclude(a1 => a1.tag)
+            .Include(b => b.AccountRequest)
+            .Include(c => c.Author)
+            .Include(d => d.Publisher)
+            .FirstOrDefault(p => p.ID == ID);
         }
 
         public List<Propose> GetProposeByIdUser(int ID)
         {
-            return _context.Proposes.Where(p => p.Status == false && p.ID_Acc_Request == ID)
-            .Include(a => a.Tags).ToList();
+            return _context.Proposes
+            .Where(p => p.Status == false && p.ID_Acc_Request == ID)
+            .Include(a => a.Tags)
+                .ThenInclude(a1 => a1.tag)
+            .Include(b => b.AccountRequest)
+            .Include(c => c.Author)
+            .Include(d => d.Publisher)
+            .ToList();
         }
 
         public double GetRateAvgBookByIdBook(int idBook)
@@ -175,6 +187,7 @@ namespace ReviewBook.API.Services
             currentBook.Picture = book.Picture;
             currentBook.description = book.description;
             currentBook.PublishedYear = book.PublishedYear;
+
             _context.Books.Update(currentBook);
             _context.SaveChanges();
             return book;
@@ -192,7 +205,7 @@ namespace ReviewBook.API.Services
             currentPropose.Author = propose.Author;
             currentPropose.ID_Acc_Request = propose.ID_Acc_Request;
             currentPropose.Status = propose.Status;
-
+            currentPropose.description = propose.description;
             _context.Proposes.Update(currentPropose);
             _context.SaveChanges();
             return propose;
