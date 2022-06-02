@@ -23,7 +23,7 @@ namespace ReviewBook.API.Data.Entities
         public string UserName { get; set; }
         [StringLength(64)]
 
-
+        [System.Text.Json.Serialization.JsonIgnore]
         public string Password { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]

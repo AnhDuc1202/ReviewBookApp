@@ -113,16 +113,6 @@ namespace ReviewBook.API.Services
 
         public Book? GetBookById(int ID)
         {
-            // return _context.Books
-            // .Include(a => a.Tags)
-            //     .ThenInclude(a1 => a1.tag)
-            // .Include(b => b.author)
-            // .Include(c => c.publisher)
-            // .Include(d => d.reviews)
-            //     .ThenInclude(d1 => d1.reviewChildrens)
-            //     .ThenInclude(d2 => d2.Account)
-            // .AsNoTracking()
-            // .FirstOrDefault(p => p.Id == ID);
 
             return _context.Books
             .Include(a => a.Tags)
@@ -131,7 +121,10 @@ namespace ReviewBook.API.Services
             .Include(c => c.publisher)
             .Include(d => d.reviews)
             .Include(k => k.reviews)
-                .ThenInclude(e1 => e1.reviewChildrens)
+                .ThenInclude(e1 => e1.Account)
+            .Include(k => k.reviews)
+                .ThenInclude(e2 => e2.reviewChildrens)
+                .ThenInclude(e21 => e21.Account)
             .AsNoTracking()
             .FirstOrDefault(p => p.Id == ID);
         }
