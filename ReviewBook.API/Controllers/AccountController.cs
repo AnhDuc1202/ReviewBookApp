@@ -22,17 +22,17 @@ namespace ReviewBook.API.Controllers
             _userService = userService;
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("hasPassword")]
-        public ActionResult<IEnumerable<Account>> Get()
-        {
-            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-            var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID_Role == 1) return Ok(_AccountService.GetAllAccounts());
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // [HttpGet("hasPassword")]
+        // public ActionResult<IEnumerable<Account>> Get()
+        // {
+        //     var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+        //     var acc = _userService.jwtTokenToAccount(_bearer_token);
+        //     if (acc.ID_Role == 1) return Ok(_AccountService.GetAllAccounts());
 
-            return Problem("Không đủ quyền. Phải là admin",
-                statusCode: (int)HttpStatusCode.BadRequest);
-        }
+        //     return Problem("Không đủ quyền. Phải là admin",
+        //         statusCode: (int)HttpStatusCode.BadRequest);
+        // }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("noPassword")]
@@ -41,18 +41,18 @@ namespace ReviewBook.API.Controllers
             return Ok(_AccountService.GetAllAccountsNoPassword());
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("hasPassword/{id}")]
-        public ActionResult<Account> Get(int id)
-        {
-            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-            var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == id || acc.ID_Role == 1)
-                return Ok(_AccountService.GetAccountById(id));
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // [HttpGet("hasPassword/{id}")]
+        // public ActionResult<Account> Get(int id)
+        // {
+        //     var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+        //     var acc = _userService.jwtTokenToAccount(_bearer_token);
+        //     if (acc.ID == id || acc.ID_Role == 1)
+        //         return Ok(_AccountService.GetAccountById(id));
 
-            return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
-                statusCode: (int)HttpStatusCode.BadRequest);
-        }
+        //     return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
+        //         statusCode: (int)HttpStatusCode.BadRequest);
+        // }
 
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
