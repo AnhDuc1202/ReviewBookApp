@@ -120,7 +120,14 @@ namespace ReviewBook.API.Services
             List<MyBooks> current = this.context.myBooks.ToList();
             if (current.Count == 0)
                 return null;
-            return this.context.myBooks.Where(a => a.ID_Acc == ID).Include(b => b.book).AsNoTracking().ToList();
+            return this.context.myBooks.Where(a => a.ID_Acc == ID)
+            .Include(b => b.book)
+                .ThenInclude(c => c.author)
+            .Include(b => b.book)
+                .ThenInclude(d => d.publisher)
+            .Include(b => b.book)
+                .ThenInclude(e => e.Tags)
+            .AsNoTracking().ToList();
         }
 
         public MyBooks GetMyBookByIdBook(MyBooks myBook)
