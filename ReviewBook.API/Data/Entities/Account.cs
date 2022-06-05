@@ -16,6 +16,7 @@ namespace ReviewBook.API.Data.Entities
             reviews = new List<Review>();
             Proposes = new List<Propose>();
             ReviewChildrens = new List<ReviewChildren>();
+            myTags = new List<MyTags>();
         }
         [Key]
         public int ID { get; set; }
@@ -46,5 +47,7 @@ namespace ReviewBook.API.Data.Entities
         [System.Text.Json.Serialization.JsonIgnore]
         public virtual List<ReviewChildren> ReviewChildrens { get; set; }
         public virtual List<Propose> Proposes { get; set; }
+        public virtual List<MyTags> myTags { get; set; }
+
     }
 }

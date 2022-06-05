@@ -10,6 +10,7 @@ namespace ReviewBook.API.Data.Entities
             Description = string.Empty;
             Books = new List<Book_Tag>();
             Proposes = new List<Propose_Tag>();
+            myTags = new List<MyTags>();
         }
 
         [Key]
@@ -22,5 +23,6 @@ namespace ReviewBook.API.Data.Entities
 
         [System.Text.Json.Serialization.JsonIgnore]
         public virtual List<Propose_Tag> Proposes { get; set; }
+        public virtual List<MyTags> myTags { get; set; }
     }
 }

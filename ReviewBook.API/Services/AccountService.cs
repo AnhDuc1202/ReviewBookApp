@@ -34,6 +34,15 @@ namespace ReviewBook.API.Services
             return follow;
         }
 
+        public MyTags? CreateMyTag(MyTags myTags)
+        {
+            var mt = GetMyTagByIdAccAndIdTag(myTags.ID_Acc, myTags.ID_Tag);
+            if (mt != null) return null;
+            _context.myTags.Add(myTags);
+            _context.SaveChanges();
+            return myTags;
+        }
+
         public bool DeleteAccount(int IdAcc)
         {
             var currentAcc = GetAccountById(IdAcc);
@@ -52,6 +61,15 @@ namespace ReviewBook.API.Services
             return true;
         }
 
+        public bool DeleteMyTag(MyTags myTags)
+        {
+            var mt = GetMyTagByIdAccAndIdTag(myTags.ID_Acc, myTags.ID_Tag);
+            if (mt == null) return false;
+            _context.myTags.Remove(mt);
+            _context.SaveChanges();
+            return true;
+        }
+
         public Account? GetAccountById(int IdAcc)
         {
             return _context.Accounts
@@ -62,6 +80,19 @@ namespace ReviewBook.API.Services
             .FirstOrDefault(a => a.ID == IdAcc);
         }
 
+        public Account? GetAccountByIdHasMyTag(int IdAcc)
+        {
+            return _context.Accounts
+            .Include(a => a.role)
+            .Include(b => b.myFollowers)
+            .Include(c => c.myFollowings)
+            .Include(d => d.myBooks)
+                .ThenInclude(d1 => d1.book)
+            .Include(d => d.myTags)
+                .ThenInclude(d1 => d1.Tag)
+            .AsNoTracking()
+            .FirstOrDefault(a => a.ID == IdAcc);
+        }
         public Account? GetAccountByIdNoPassword(int IdAcc)
         {
             var acc = _context.Accounts
@@ -100,6 +131,11 @@ namespace ReviewBook.API.Services
         {
             return _context.Follows
             .FirstOrDefault(a => a.ID_Follower == ID_Follower && a.ID_Following == ID_Following);
+        }
+
+        public MyTags? GetMyTagByIdAccAndIdTag(int ID_Acc, int ID_Tag)
+        {
+            return _context.myTags.FirstOrDefault(c => c.ID_Acc == ID_Acc && c.ID_Tag == ID_Tag);
         }
 
         public Account? UpdateInforAccount(Account account)

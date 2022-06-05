@@ -53,7 +53,16 @@ namespace ReviewBook.API.Controllers
         //     return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
         //         statusCode: (int)HttpStatusCode.BadRequest);
         // }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("MyInforHasMyTag")]
+        public ActionResult<Account> Get()
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
 
+            return Ok(_AccountService.GetAccountByIdHasMyTag(acc.ID));
+
+        }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("noPassword/{id}")]
@@ -176,6 +185,42 @@ namespace ReviewBook.API.Controllers
             var kq = _AccountService.DeleteFollow(value.toEntitiesFollow(acc.ID));
             if (!kq)
                 return Problem("Hủy Follow thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok();
+
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("MyTag/{id_tag}")]
+        public ActionResult PostT(int id_tag)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+
+            MyTags m = new MyTags();
+            m.ID_Acc = acc.ID;
+            m.ID_Tag = id_tag;
+            var newMyTag = _AccountService.CreateMyTag(m);
+            if (newMyTag == null)
+                return Problem("thêm my tag thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok();
+
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("MyTag/{id_tag}")]
+        public ActionResult DeleteT(int id_tag)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+
+            MyTags m = new MyTags();
+            m.ID_Acc = acc.ID;
+            m.ID_Tag = id_tag;
+            var kq = _AccountService.DeleteMyTag(m);
+            if (!kq)
+                return Problem("Hủy my tag thất bại",
                     statusCode: (int)HttpStatusCode.BadRequest);
             return Ok();
 
