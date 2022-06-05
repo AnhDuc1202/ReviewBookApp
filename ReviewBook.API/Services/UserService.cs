@@ -79,7 +79,13 @@ namespace ReviewBook.API.Services
         //Search book
         public List<Book> searchForBookOrAuthor(String bookOrAuthor)
         {
-            List<Book> result = this.context.Books.Where(b => b.Name.ToLower().Contains(bookOrAuthor.ToLower()) || this.context.Authors.FirstOrDefault(a => a.Id == b.ID_Aut).Name.ToLower().Contains(bookOrAuthor.ToLower())).ToList();
+            List<Book> result = this.context.Books.Where(b => b.Name.ToLower().Contains(bookOrAuthor.ToLower()) || 
+            this.context.Authors.FirstOrDefault(a => a.Id == b.ID_Aut).Name.ToLower().Contains(bookOrAuthor.ToLower()))
+            .Include(a => a.author)
+            .Include(b => b.publisher)
+            .Include(c => c.Tags)
+                .ThenInclude(d => d.tag)
+            .ToList();
             return result;
         }
 
@@ -114,7 +120,14 @@ namespace ReviewBook.API.Services
             List<MyBooks> current = this.context.myBooks.ToList();
             if (current.Count == 0)
                 return null;
-            return this.context.myBooks.Where(a => a.ID_Acc == ID).Include(b => b.book).AsNoTracking().ToList();
+            return this.context.myBooks.Where(a => a.ID_Acc == ID)
+            .Include(b => b.book)
+                .ThenInclude(c => c.author)
+            .Include(b => b.book)
+                .ThenInclude(d => d.publisher)
+            .Include(b => b.book)
+                .ThenInclude(e => e.Tags)
+            .AsNoTracking().ToList();
         }
 
         public MyBooks GetMyBookByIdBook(MyBooks myBook)
@@ -128,7 +141,7 @@ namespace ReviewBook.API.Services
 
         public bool DeleteBookById(MyBooks myBooks)
         {
-            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Acc == myBooks.ID_Acc && m.ID_Book==myBooks.ID_Book);
+            MyBooks current = this.context.myBooks.FirstOrDefault(m => m.ID_Acc == myBooks.ID_Acc && m.ID_Book == myBooks.ID_Book);
             if (current == null)
                 return false;
             this.context.myBooks.Remove(current);
