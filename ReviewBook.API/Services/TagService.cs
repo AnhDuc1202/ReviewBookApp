@@ -49,6 +49,10 @@ namespace ReviewBook.API.Services
             return _context.Tags
             .Include(a => a.Books)
                 .ThenInclude(a1 => a1.book)
+                    .ThenInclude(a2 => a2.author)
+            .Include(a => a.Books)
+                .ThenInclude(a1 => a1.book)
+                    .ThenInclude(a3 => a3.publisher)
             .AsNoTracking()
             .FirstOrDefault(p => p.ID == ID);
         }
