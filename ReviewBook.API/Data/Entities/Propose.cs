@@ -12,6 +12,9 @@ namespace ReviewBook.API.Data.Entities
             Status = false;
             Tags = new List<Propose_Tag>();
             description = String.Empty;
+            NewAut = String.Empty;
+            NewPub = String.Empty;
+            newTags = new List<Propose_NewTag>();
         }
 
         [Key]
@@ -24,10 +27,13 @@ namespace ReviewBook.API.Data.Entities
         public int PublishedYear { get; set; }
         public byte[]? Picture { get; set; }
         public String description { get; set; }
+        public String NewAut { get; set; }
+        public String NewPub { get; set; }
         public bool Status { get; set; }
         public virtual Author? Author { get; set; }
         public virtual Publisher? Publisher { get; set; }
         public virtual Account AccountRequest { get; set; }
         public virtual List<Propose_Tag> Tags { get; set; }
+        public virtual List<Propose_NewTag> newTags { get; set; }
     }
 }

@@ -37,6 +37,13 @@ namespace ReviewBook.API.Services
             return propose;
         }
 
+        public Propose_NewTag CreateProposeNewTags(Propose_NewTag propose_NewTag)
+        {
+            _context.propose_NewTags.Add(propose_NewTag);
+            _context.SaveChanges();
+            return propose_NewTag;
+        }
+
         public Propose_Tag CreateProposeTag(Propose_Tag propose_Tag)
         {
             _context.ProposeTags.Add(propose_Tag);
@@ -67,6 +74,15 @@ namespace ReviewBook.API.Services
             var currentPropose = GetProposeById(ID);
             if (currentPropose == null) return false;
             _context.Proposes.Remove(currentPropose);
+            _context.SaveChanges();
+            return true;
+        }
+
+        public bool DeleteProposeNewTags(int ID)
+        {
+            var p = GetProposeNewTagsById(ID);
+            if (p == null) return false;
+            _context.propose_NewTags.Remove(p);
             _context.SaveChanges();
             return true;
         }
@@ -148,6 +164,7 @@ namespace ReviewBook.API.Services
             .Include(b => b.AccountRequest)
             .Include(c => c.Author)
             .Include(d => d.Publisher)
+            .Include(e => e.newTags)
             .FirstOrDefault(p => p.ID == ID);
         }
 
@@ -161,6 +178,11 @@ namespace ReviewBook.API.Services
             .Include(c => c.Author)
             .Include(d => d.Publisher)
             .ToList();
+        }
+
+        public Propose_NewTag? GetProposeNewTagsById(int ID)
+        {
+            return _context.propose_NewTags.FirstOrDefault(c => c.ID == ID);
         }
 
         public double GetRateAvgBookByIdBook(int idBook)
@@ -203,12 +225,13 @@ namespace ReviewBook.API.Services
             currentPropose.Picture = propose.Picture;
             currentPropose.PublishedYear = propose.PublishedYear;
             currentPropose.Author = propose.Author;
-            currentPropose.ID_Acc_Request = propose.ID_Acc_Request;
             currentPropose.Status = propose.Status;
             currentPropose.description = propose.description;
+            currentPropose.NewAut = propose.NewAut;
+            currentPropose.NewPub = propose.NewPub;
             _context.Proposes.Update(currentPropose);
             _context.SaveChanges();
-            return propose;
+            return currentPropose;
         }
     }
 }

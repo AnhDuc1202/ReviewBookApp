@@ -16,13 +16,15 @@ namespace ReviewBook.API.Controllers
         private readonly IBookService _BookService;
         private readonly IUserService _userService;
         private readonly IReviewService _reviewService;
+        private readonly ITagService _tagService;
 
         public BookController(IBookService bookService, IUserService userService
-        , IReviewService reviewService)
+        , IReviewService reviewService, ITagService tagService)
         {
             _BookService = bookService;
             _userService = userService;
             _reviewService = reviewService;
+            _tagService = tagService;
         }
 
         [HttpGet]
@@ -237,13 +239,20 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 2)
             {
-                var newPropose = _BookService.CreatePropose(value.toProposeEntity());
+                var newPropose = _BookService.CreatePropose(value.toProposeEntity(acc.ID));
                 for (int i = 0; i < value.List_ID_Tags.Count(); i++)
                 {
                     Propose_Tag k = new Propose_Tag();
                     k.ID_Propose = newPropose.ID;
                     k.ID_Tag = value.List_ID_Tags[i];
                     _BookService.CreateProposeTag(k);
+                }
+                for (int i = 0; i < value.List_new_tags.Count(); i++)
+                {
+                    Propose_NewTag k = new Propose_NewTag();
+                    k.ID_Propose = newPropose.ID;
+                    k.nameNewTag = value.List_new_tags[i];
+                    _BookService.CreateProposeNewTags(k);
                 }
                 return Ok(_BookService.GetProposeById(newPropose.ID));
             }
@@ -287,6 +296,45 @@ namespace ReviewBook.API.Controllers
         public ActionResult DeletePropose(int id)
         {
             return Ok(_BookService.DeletePropose(id));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("Propose/Tag/{id}")]
+        public ActionResult PostTag(int id)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID_Role == 1)
+            {
+                var b = _BookService.GetProposeNewTagsById(id);
+                if (b == null) return Problem("ID new tag sai",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+                Tag k = new Tag();
+                k.Name = b.nameNewTag;
+                var t = _tagService.CreateTag(k);
+
+                _BookService.DeleteProposeNewTags(id);
+                return Ok(_tagService.GetAllTagsNoBook());
+            }
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("Propose/Tag/{id}")]
+        public ActionResult DeleteProposenewtag(int id)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID_Role == 1)
+            {
+                var kq = _BookService.DeleteProposeNewTags(id);
+                if (kq) return Ok();
+                return Problem("Xóa thất bại",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            }
+            return Problem("Không đủ quyền. Phải là admin",
+                statusCode: (int)HttpStatusCode.BadRequest);
         }
     }
 }
