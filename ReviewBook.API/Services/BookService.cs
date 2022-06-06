@@ -201,7 +201,7 @@ namespace ReviewBook.API.Services
 
         public Book? UpdateBook(Book book)
         {
-            var currentBook = GetBookById(book.Id);
+            var currentBook = _context.Books.FirstOrDefault(c => c.Id == book.Id);
             if (currentBook == null) return null;
             currentBook.Name = book.Name;
             currentBook.ID_Aut = book.ID_Aut;
@@ -212,7 +212,7 @@ namespace ReviewBook.API.Services
 
             _context.Books.Update(currentBook);
             _context.SaveChanges();
-            return book;
+            return currentBook;
         }
 
         public Propose? UpdatePropose(Propose propose)
