@@ -32,7 +32,6 @@ namespace ReviewBook.API.Services
         public List<Publisher> GetAllPublishers()
         {
             return _context.Publishers
-            .Include(a => a.Books)
             .AsNoTracking()
             .ToList();
         }

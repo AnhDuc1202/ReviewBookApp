@@ -26,12 +26,7 @@ namespace ReviewBook.API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Publisher>> Get()
         {
-            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-            var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID_Role == 1)
-                return Ok(_PublisherService.GetAllPublishers());
-            return Problem("Không đủ quyền. Phải là admin",
-                statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(_PublisherService.GetAllPublishers());
         }
 
         [HttpGet("{id}")]
