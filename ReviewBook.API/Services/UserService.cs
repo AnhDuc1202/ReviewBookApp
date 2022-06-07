@@ -80,7 +80,7 @@ namespace ReviewBook.API.Services
         public List<Book> searchForBookOrAuthor(String bookOrAuthor)
         {
             List<Book> result = this.context.Books.Where(b => b.Name.ToLower().Contains(bookOrAuthor.ToLower()) || 
-            this.context.Authors.FirstOrDefault(a => a.Id == b.ID_Aut).Name.ToLower().Contains(bookOrAuthor.ToLower()))
+            b.ID_Aut == this.context.Authors.FirstOrDefault(a => a.Name.ToLower().Contains(bookOrAuthor.ToLower())).Id)
             .Include(a => a.author)
             .Include(b => b.publisher)
             .Include(c => c.Tags)
@@ -127,13 +127,21 @@ namespace ReviewBook.API.Services
                 .ThenInclude(d => d.publisher)
             .Include(b => b.book)
                 .ThenInclude(e => e.Tags)
+                    .ThenInclude(f => f.tag)
             .AsNoTracking().ToList();
         }
 
         public MyBooks GetMyBookByIdBook(MyBooks myBook)
         {
             MyBooks current = this.context.myBooks
-                .Include(a => a.book).FirstOrDefault(m => m.ID_Book == myBook.ID_Book && m.ID_Acc == myBook.ID_Acc);
+                .Include(a => a.book)
+                    .ThenInclude(c => c.author)
+                .Include(b => b.book)
+                    .ThenInclude(d => d.publisher)
+                .Include(b => b.book)
+                    .ThenInclude(e => e.Tags)
+                        .ThenInclude(f => f.tag)
+                .FirstOrDefault(m => m.ID_Book == myBook.ID_Book && m.ID_Acc == myBook.ID_Acc);
             if (current == null)
                 return null;
             return current;
