@@ -59,13 +59,13 @@ namespace ReviewBook.API.Services
 
         public Tag? UpdateTag(Tag tag)
         {
-            var currentTag = GetTagById(tag.ID);
+            var currentTag = _context.Tags.FirstOrDefault(c => c.ID == tag.ID);
             if (currentTag == null) return null;
             currentTag.Name = tag.Name;
             currentTag.Description = tag.Description;
             _context.Tags.Update(currentTag);
             _context.SaveChanges();
-            return tag;
+            return currentTag;
         }
     }
 }
