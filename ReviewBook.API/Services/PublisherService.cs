@@ -49,7 +49,7 @@ namespace ReviewBook.API.Services
 
         public Publisher? UpdatePublisher(Publisher publisher)
         {
-            var currentPublisher = GetPublisherById(publisher.ID);
+            var currentPublisher = _context.Publishers.FirstOrDefault(c => c.ID == publisher.ID);
             if (currentPublisher == null) return null;
             currentPublisher.Name = publisher.Name;
             currentPublisher.Email = publisher.Email;
@@ -59,7 +59,7 @@ namespace ReviewBook.API.Services
 
             _context.Publishers.Update(currentPublisher);
             _context.SaveChanges();
-            return publisher;
+            return currentPublisher;
         }
     }
 }
