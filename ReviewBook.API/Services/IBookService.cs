@@ -10,6 +10,7 @@ namespace ReviewBook.API.Services
         public Book CreateBook(Book book);
         public Book? UpdateBook(Book book);
         public bool DeleteBook(int ID);
+        public int? CheckName(String Name);
 
         public List<Propose> GetAllProposes();
         public List<Propose> GetProposeByIdUser(int ID);

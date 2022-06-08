@@ -14,6 +14,13 @@ namespace ReviewBook.API.Services
             _context = context;
         }
 
+        public int? CheckName(string Name)
+        {
+            var currentBook = _context.Books.FirstOrDefault(c => c.Name.Trim().ToLower() == Name.Trim().ToLower());
+            if (currentBook == null) return null;
+            return currentBook.Id;
+        }
+
         public Book CreateBook(Book book)
         {
             _context.Books.Add(book);

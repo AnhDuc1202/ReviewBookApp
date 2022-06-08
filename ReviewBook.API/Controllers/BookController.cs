@@ -142,6 +142,10 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
             {
+                var check = _BookService.CheckName(value.Name);
+                if (check != null)
+                    return Problem("Cuốn sách khác đã dùng tên này",
+                    statusCode: (int)HttpStatusCode.BadRequest);
                 var newBook = _BookService.CreateBook(value.toBookEntity());
                 for (int i = 0; i < value.List_ID_Tags.Count(); i++)
                 {
@@ -164,6 +168,10 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
             {
+                var check = _BookService.CheckName(value.Name);
+                if (check != id && check != null)
+                    return Problem("Cuốn sách khác đã dùng tên này",
+                    statusCode: (int)HttpStatusCode.BadRequest);
                 var book = _BookService.UpdateBook(value.toBookEntity(id));
                 var k = _BookService.GetAllBookTagsByIdBook(book.Id);
                 for (int i = 0; i < value.List_ID_Tags_Remove.Count(); i++)

@@ -41,7 +41,13 @@ namespace ReviewBook.API.Controllers
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
+            {
+                var check = _PublisherService.CheckName(value.Name);
+                if (check != null)
+                    return Problem("Đã tồn tại nhà xuất bản mang tên này",
+                    statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(_PublisherService.CreatePublisher(value.toAuthorEntity()));
+            }
             return Problem("Không đủ quyền. Phải là admin",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
@@ -52,7 +58,13 @@ namespace ReviewBook.API.Controllers
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
+            {
+                var check = _PublisherService.CheckName(value.Name);
+                if (check != id && check != null)
+                    return Problem("Đã tồn tại nhà xuất bản khác mang tên này",
+                    statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(_PublisherService.UpdatePublisher(value.toPublisherEntity(id)));
+            }
             return Problem("Không đủ quyền. Phải là admin",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
