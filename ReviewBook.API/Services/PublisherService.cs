@@ -13,6 +13,13 @@ namespace ReviewBook.API.Services
             _context = context;
         }
 
+        public int? CheckName(string Name)
+        {
+            var check = _context.Publishers.FirstOrDefault(c => c.Name.Trim().ToLower() == Name.Trim().ToLower());
+            if (check == null) return null;
+            return check.ID;
+        }
+
         public Publisher CreatePublisher(Publisher publisher)
         {
             _context.Publishers.Add(publisher);

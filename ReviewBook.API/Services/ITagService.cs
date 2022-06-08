@@ -10,5 +10,6 @@ namespace ReviewBook.API.Services
         public Tag CreateTag(Tag tag);
         public Tag? UpdateTag(Tag tag);
         public bool DeleteTag(int ID);
+        public int? CheckName(String Name);
     }
 }

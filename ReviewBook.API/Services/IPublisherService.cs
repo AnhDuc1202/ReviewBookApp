@@ -9,5 +9,6 @@ namespace ReviewBook.API.Services
         public Publisher CreatePublisher(Publisher publisher);
         public Publisher? UpdatePublisher(Publisher publisher);
         public bool DeletePublisher(int ID);
+        public int? CheckName(String Name);
     }
 }

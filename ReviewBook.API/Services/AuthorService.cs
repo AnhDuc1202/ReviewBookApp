@@ -13,6 +13,13 @@ namespace ReviewBook.API.Services
             _context = context;
         }
 
+        public int? CheckName(string Name)
+        {
+            var check = _context.Authors.FirstOrDefault(c => c.Name.Trim().ToLower() == Name.Trim().ToLower());
+            if (check == null) return null;
+            return check.Id;
+        }
+
         public Author CreateAuthor(Author author)
         {
             _context.Authors.Add(author);
@@ -50,7 +57,7 @@ namespace ReviewBook.API.Services
 
         public Author? UpdateAuthor(Author author)
         {
-            var currentAuthor = GetAuthorById(author.Id);
+            var currentAuthor = _context.Authors.FirstOrDefault(c => c.Id == author.Id);
             if (currentAuthor == null) return null;
             currentAuthor.Name = author.Name;
             currentAuthor.Stage_Name = author.Stage_Name;
