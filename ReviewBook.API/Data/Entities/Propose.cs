@@ -14,7 +14,6 @@ namespace ReviewBook.API.Data.Entities
             description = String.Empty;
             NewAut = String.Empty;
             NewPub = String.Empty;
-            newTags = new List<Propose_NewTag>();
         }
 
         [Key]
@@ -34,6 +33,5 @@ namespace ReviewBook.API.Data.Entities
         public virtual Publisher? Publisher { get; set; }
         public virtual Account AccountRequest { get; set; }
         public virtual List<Propose_Tag> Tags { get; set; }
-        public virtual List<Propose_NewTag> newTags { get; set; }
     }
 }

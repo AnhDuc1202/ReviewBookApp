@@ -13,7 +13,6 @@ namespace ReviewBook.API.DTOs
         public String NewAut { get; set; }
         public String NewPub { get; set; }
         public List<int> List_ID_Tags { get; set; }
-        public List<String> List_new_tags { get; set; }
         public Propose toProposeEntity(int ID_Acc_Request)
         {
             Propose b = new Propose();
@@ -45,7 +44,6 @@ namespace ReviewBook.API.DTOs
         public String NewPub { get; set; }
         public List<int> List_ID_Tags_Remove { get; set; }
         public List<int> List_ID_Tags_Add { get; set; }
-        public List<int> List_ID_new_tags { get; set; }
         public Propose toProposeEntity(int id)
         {
             Propose b = new Propose();
