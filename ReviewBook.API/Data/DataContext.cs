@@ -18,7 +18,6 @@ namespace ReviewBook.API.Data
         public DbSet<Book_Tag> BookTags { get; set; }
         public DbSet<Propose_Tag> ProposeTags { get; set; }
         public DbSet<ReviewChildren> reviewChildrens { get; set; }
-        public DbSet<Propose_NewTag> propose_NewTags { get; set; }
         public DbSet<MyTags> myTags { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -127,12 +126,6 @@ namespace ReviewBook.API.Data
                 e.HasOne(c => c.Account)
                 .WithMany(d => d.ReviewChildrens)
                 .HasForeignKey("ID_Acc");
-            });
-            builder.Entity<Propose_NewTag>(e =>
-            {
-                e.HasOne(c => c.Propose)
-                .WithMany(d => d.newTags)
-                .HasForeignKey("ID_Propose");
             });
             base.OnModelCreating(builder);
         }
