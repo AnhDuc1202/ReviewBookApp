@@ -107,7 +107,7 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID == id || acc.ID_Role == 1)
+            if (acc.ID == id)
             {
                 string pass = _AccountService.GetAccountById(id).Password;
                 if (pass != value.CurrentPassword)
@@ -117,12 +117,28 @@ namespace ReviewBook.API.Controllers
                 if (kq == null)
                     return Problem("Cập nhật thất bại",
                         statusCode: (int)HttpStatusCode.BadRequest);
-                return Ok(kq);
+                return Ok();
             }
-            return Problem("Không đủ quyền. Phải là admin hoặc tài khoản chính chủ",
+            return Problem("Phải là tài khoản chính chủ",
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut("passwordAdmin/{id}")]
+        public ActionResult<Account> PutPP(int id, [FromBody] UpdatePasswordAccountRoleAdminDTOs value)
+        {
+            var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var acc = _userService.jwtTokenToAccount(_bearer_token);
+            if (acc.ID_Role == 1)
+            {
+                var kq = _AccountService.UpdatePasswordAccount(value.toAccountEntity(id));
+                if (kq == null)
+                    return Problem("Cập nhật thất bại",
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                return Ok();
+            }
+            return Problem("Không đủ quyền. Phải là admin.",
+                statusCode: (int)HttpStatusCode.BadRequest);
+        }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("information/{id}")]
