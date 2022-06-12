@@ -66,4 +66,15 @@ namespace ReviewBook.API.DTOs
             return acc;
         }
     }
+    public class UpdatePasswordAccountRoleAdminDTOs
+    {
+        public string NewPassword { get; set; }
+        public Account toAccountEntity(int ID)
+        {
+            Account acc = new Account();
+            acc.ID = ID;
+            acc.Password = this.NewPassword;
+            return acc;
+        }
+    }
 }
