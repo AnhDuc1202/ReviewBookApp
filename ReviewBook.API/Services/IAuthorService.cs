@@ -10,6 +10,6 @@ namespace ReviewBook.API.Services
         public Author CreateAuthor(Author author);
         public Author? UpdateAuthor(Author author);
         public bool DeleteAuthor(int ID);
-        public int? CheckName(String Name);
+        public int? CheckStageName(String Name);
     }
 }
