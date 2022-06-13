@@ -44,9 +44,9 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
             {
-                var check = _AuthorService.CheckName(value.Name);
+                var check = _AuthorService.CheckStageName(value.Stage_Name);
                 if (check != null)
-                    return Problem("Đã tồn tại tác giả mang tên này",
+                    return Problem("Đã tồn tại tác giả mang nghệ danh này",
                     statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(_AuthorService.CreateAuthor(value.toAuthorEntity()));
             }
@@ -62,9 +62,9 @@ namespace ReviewBook.API.Controllers
             var acc = _userService.jwtTokenToAccount(_bearer_token);
             if (acc.ID_Role == 1)
             {
-                var check = _AuthorService.CheckName(value.Name);
+                var check = _AuthorService.CheckStageName(value.Stage_Name);
                 if (check != id && check != null)
-                    return Problem("Đã tồn tại tác giả khác mang tên này",
+                    return Problem("Đã tồn tại tác giả khác mang nghệ danh này",
                     statusCode: (int)HttpStatusCode.BadRequest);
                 return Ok(_AuthorService.UpdateAuthor(value.toAuthorEntity(id)));
             }

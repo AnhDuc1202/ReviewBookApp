@@ -4,11 +4,11 @@ namespace ReviewBook.API.DTOs
 {
     public class CreateAuthorDTOs
     {
-        public string Name { get; set; }
+        public string Stage_Name { get; set; }
         public Author toAuthorEntity()
         {
             Author author = new Author();
-            author.Name = Name;
+            author.Stage_Name = Stage_Name;
             return author;
         }
     }

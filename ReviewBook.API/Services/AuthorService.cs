@@ -13,9 +13,9 @@ namespace ReviewBook.API.Services
             _context = context;
         }
 
-        public int? CheckName(string Name)
+        public int? CheckStageName(string Stage_Name)
         {
-            var check = _context.Authors.FirstOrDefault(c => c.Name.Trim().ToLower() == Name.Trim().ToLower());
+            var check = _context.Authors.FirstOrDefault(c => c.Stage_Name.Trim().ToLower() == Stage_Name.Trim().ToLower());
             if (check == null) return null;
             return check.Id;
         }
