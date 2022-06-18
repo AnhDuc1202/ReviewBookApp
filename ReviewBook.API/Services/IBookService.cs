@@ -1,5 +1,6 @@
 
 using ReviewBook.API.Data.Entities;
+using ReviewBook.API.DTOs;
 
 namespace ReviewBook.API.Services
 {
@@ -12,11 +13,11 @@ namespace ReviewBook.API.Services
         public bool DeleteBook(int ID);
         public int? CheckName(String Name);
 
-        public List<Propose> GetAllProposes();
+        public List<ProposeBasicDTOs> GetAllProposes();
         public List<Propose> GetProposeByIdUser(int ID);
         public Propose? GetProposeById(int ID);
         public Propose CreatePropose(Propose propose);
-        public Propose? UpdatePropose(Propose propose);
+        public int? AddBookFromPropose(int Idpropose);
         public bool DeletePropose(int ID);
         public Book_Tag? CreateBookTag(Book_Tag book_Tag);
         public List<Book_Tag> GetAllBookTagsByIdBook(int ID);
