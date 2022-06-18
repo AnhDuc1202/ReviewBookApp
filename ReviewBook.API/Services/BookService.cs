@@ -8,10 +8,72 @@ namespace ReviewBook.API.Services
     public class BookService : IBookService
     {
         private readonly DataContext _context;
+        private readonly IAuthorService _authorService;
+        private readonly IPublisherService _publisherService;
 
-        public BookService(DataContext context)
+        public BookService(DataContext context, IAuthorService authorService, IPublisherService publisherService)
         {
             _context = context;
+            _authorService = authorService;
+            _publisherService = publisherService;
+        }
+        public int? AddBookFromPropose(int Idpropose)
+        {
+            var propose = _context.Proposes.Where(p => p.Status == false)
+                        .Include(a => a.Tags)
+                        .Include(c => c.Author)
+                        .Include(d => d.Publisher)
+                        .FirstOrDefault(p => p.ID == Idpropose);
+            if (propose == null) return null;
+            if (String.IsNullOrEmpty(propose.BookName)) return -1;
+            if (CheckName(propose.BookName) != null)
+                return -2; // tên sách đã tồn tại
+
+            Book book = new Book();
+            book.Name = propose.BookName;
+            book.PublishedYear = propose.PublishedYear;
+            book.Picture = propose.Picture;
+            book.description = propose.description;
+
+            if (propose.Author != null)
+                book.ID_Aut = propose.Author.Id;
+            else
+            {
+                if (String.IsNullOrEmpty(propose.NewAut)) return -3;
+                var aut = _authorService.CheckStageName(propose.NewAut);
+                if (aut == null)
+                {
+                    Author a = new Author();
+                    a.Stage_Name = propose.NewAut;
+                    book.ID_Aut = _authorService.CreateAuthor(a).Id;
+                }
+                else book.ID_Aut = Int32.Parse(aut.ToString());
+            }
+            if (propose.Publisher != null)
+                book.ID_Pub = propose.Publisher.ID;
+            else
+            {
+                if (String.IsNullOrEmpty(propose.NewPub)) return -4;
+                var pub = _publisherService.CheckName(propose.NewPub);
+                if (pub == null)
+                {
+                    Publisher a = new Publisher();
+                    a.Name = propose.NewPub;
+                    book.ID_Aut = _publisherService.CreatePublisher(a).ID;
+                }
+                else book.ID_Aut = Int32.Parse(pub.ToString());
+            }
+            var newBook = CreateBook(book);
+            var tags = propose.Tags;
+            foreach (var tag in tags)
+            {
+                Book_Tag k = new Book_Tag();
+                k.ID_Book = newBook.Id;
+                k.ID_Tag = tag.ID_Tag;
+                var a = CreateBookTag(k);
+            }
+            DeletePropose(propose.ID);
+            return newBook.Id;
         }
 
         public int? CheckName(string Name)
@@ -106,11 +168,22 @@ namespace ReviewBook.API.Services
         {
             return _context.BookTags.Where(p => p.ID_Book == ID).ToList();
         }
-
-        public List<Propose> GetAllProposes()
+        public List<ProposeBasicDTOs> GetAllProposes()
         {
-            return _context.Proposes.Where(p => p.Status == false)
-            .Include(a => a.Tags).ToList();
+            List<ProposeBasicDTOs> kq = new List<ProposeBasicDTOs>();
+            var Proposes = _context.Proposes.Include(a => a.Author).Include(a => a.Publisher).ToList();
+            foreach (var p in Proposes)
+            {
+                ProposeBasicDTOs k = new ProposeBasicDTOs();
+                k.Id = p.ID;
+                k.BookName = p.BookName;
+                if (p.Author == null) k.NewAut = p.NewAut;
+                else k.NewAut = p.Author.Stage_Name;
+                if (p.Publisher == null) k.NewPub = p.NewPub;
+                else k.NewPub = p.Publisher.Name;
+                kq.Add(k);
+            }
+            return kq;
         }
 
         public List<Propose_Tag> GetAllProposeTagsByIdProppose(int ID)
@@ -200,23 +273,5 @@ namespace ReviewBook.API.Services
             return currentBook;
         }
 
-        public Propose? UpdatePropose(Propose propose)
-        {
-            var currentPropose = GetProposeById(propose.ID);
-            if (currentPropose == null) return null;
-            currentPropose.BookName = propose.BookName;
-            currentPropose.ID_Aut = propose.ID_Aut;
-            currentPropose.ID_Pub = propose.ID_Pub;
-            currentPropose.Picture = propose.Picture;
-            currentPropose.PublishedYear = propose.PublishedYear;
-            currentPropose.Author = propose.Author;
-            currentPropose.Status = propose.Status;
-            currentPropose.description = propose.description;
-            currentPropose.NewAut = propose.NewAut;
-            currentPropose.NewPub = propose.NewPub;
-            _context.Proposes.Update(currentPropose);
-            _context.SaveChanges();
-            return currentPropose;
-        }
     }
 }

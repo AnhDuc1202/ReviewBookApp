@@ -61,4 +61,11 @@ namespace ReviewBook.API.DTOs
             return b;
         }
     }
+    public class ProposeBasicDTOs
+    {
+        public int Id { get; set; }
+        public string BookName { get; set; }
+        public String? NewAut { get; set; }
+        public String? NewPub { get; set; }
+    }
 }

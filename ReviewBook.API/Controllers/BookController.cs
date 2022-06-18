@@ -207,7 +207,7 @@ namespace ReviewBook.API.Controllers
                 statusCode: (int)HttpStatusCode.BadRequest);
         }
         [HttpGet("Propose")]
-        public ActionResult<IEnumerable<Propose>> GetAllProposes()
+        public ActionResult<IEnumerable<ProposeBasicDTOs>> GetAllProposes()
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
@@ -245,51 +245,51 @@ namespace ReviewBook.API.Controllers
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID_Role == 2)
-            {
-                var newPropose = _BookService.CreatePropose(value.toProposeEntity(acc.ID));
-                for (int i = 0; i < value.List_ID_Tags.Count(); i++)
-                {
-                    Propose_Tag k = new Propose_Tag();
-                    k.ID_Propose = newPropose.ID;
-                    k.ID_Tag = value.List_ID_Tags[i];
-                    _BookService.CreateProposeTag(k);
-                }
-                return Ok(_BookService.GetProposeById(newPropose.ID));
-            }
-            return Problem("Không đủ quyền. Phải là user",
+            Propose p = value.toProposeEntity(acc.ID);
+            if (acc.ID_Role != 2)
+                return Problem("Không đủ quyền. Phải là user",
                 statusCode: (int)HttpStatusCode.BadRequest);
+            if (String.IsNullOrEmpty(p.BookName))
+                return Problem("BookName không được để trống",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            if (String.IsNullOrEmpty(p.NewAut) && p.ID_Aut != null)
+                return Problem("Bạn chưa điền thông tin tác giả",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            if (String.IsNullOrEmpty(p.NewPub) && p.ID_Pub != null)
+                return Problem("Bạn chưa điền thông tin nhà xuất bản",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            var newPropose = _BookService.CreatePropose(p);
+            for (int i = 0; i < value.List_ID_Tags.Count(); i++)
+            {
+                Propose_Tag k = new Propose_Tag();
+                k.ID_Propose = newPropose.ID;
+                k.ID_Tag = value.List_ID_Tags[i];
+                _BookService.CreateProposeTag(k);
+            }
+            return Ok(_BookService.GetProposeById(newPropose.ID));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut("Propose/{id}")]
-        public ActionResult<Propose> UpdatePropose(int id, [FromBody] UpadateProposeDTOs value)
+        [HttpPost("AddBookFromPropose/{id}")]
+        public ActionResult<Book> AddBookFromPropose(int id)
         {
             var _bearer_token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var acc = _userService.jwtTokenToAccount(_bearer_token);
-            if (acc.ID_Role == 1)
-            {
-                var p = _BookService.UpdatePropose(value.toProposeEntity(id));
-                var k = _BookService.GetAllProposeTagsByIdProppose(p.ID);
-                for (int i = 0; i < value.List_ID_Tags_Remove.Count(); i++)
-                {
-                    foreach (Propose_Tag k1 in k)
-                    {
-                        if (k1.ID_Tag == value.List_ID_Tags_Remove[i])
-                            _BookService.DeleteProposeTag(k1.ID);
-                    }
-                }
-                for (int i = 0; i < value.List_ID_Tags_Add.Count(); i++)
-                {
-                    Propose_Tag m = new Propose_Tag();
-                    m.ID_Propose = p.ID;
-                    m.ID_Tag = value.List_ID_Tags_Add[i];
-                    _BookService.CreateProposeTag(m);
-                }
-                return Ok(_BookService.GetProposeById(p.ID));
-            }
-            return Problem("Không đủ quyền. Phải là admin",
+            if (acc.ID_Role != 1)
+                return Problem("Không đủ quyền. Phải là admin",
+                    statusCode: (int)HttpStatusCode.BadRequest);
+            var kq = _BookService.AddBookFromPropose(id);
+            if (kq == null) return Problem("ID Propose không tồn tại",
                 statusCode: (int)HttpStatusCode.BadRequest);
+            if (kq == -1) return Problem("Propose không có thông tin tên sách",
+                statusCode: (int)HttpStatusCode.BadRequest);
+            if (kq == -2) return Problem("Tên sách đã tồn tại",
+                statusCode: (int)HttpStatusCode.BadRequest);
+            if (kq == -3) return Problem("Propose không có thông tin tác giả",
+                statusCode: (int)HttpStatusCode.BadRequest);
+            if (kq == -4) return Problem("Propose không có thông tin nxb",
+                statusCode: (int)HttpStatusCode.BadRequest);
+            return Ok(_BookService.GetBookById(Int32.Parse(kq.ToString())));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
