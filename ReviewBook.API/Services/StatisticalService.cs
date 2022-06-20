@@ -19,7 +19,7 @@ namespace ReviewBook.API.Services
         public List<RateStatisticalDTOs> RateStatistical(int n)
         {
             List<RateStatisticalDTOs> kq = new List<RateStatisticalDTOs>();
-            var books = _context.Books.ToList();
+            var books = _context.Books.Include(a => a.author).ToList();
             foreach (Book b in books)
             {
                 double avg = _bookService.GetRateAvgBookByIdBook(b.Id);
@@ -44,7 +44,7 @@ namespace ReviewBook.API.Services
         public List<ReviewStatisticalDTOs> ReviewStatistical(int n)
         {
             List<ReviewStatisticalDTOs> kq = new List<ReviewStatisticalDTOs>();
-            var books = _context.Books.ToList();
+            var books = _context.Books.Include(a => a.author).ToList();
             foreach (Book b in books)
             {
                 long count = CountReview(b.Id);
@@ -58,7 +58,7 @@ namespace ReviewBook.API.Services
         public List<ReadedStatisticalDTOs> ReadedStatistical(int n)
         {
             List<ReadedStatisticalDTOs> kq = new List<ReadedStatisticalDTOs>();
-            var books = _context.Books.ToList();
+            var books = _context.Books.Include(a => a.author).ToList();
             foreach (Book b in books)
             {
                 long count = _context.myBooks.Where(c => c.ID_Book == b.Id && c.StatusBook == 3).Count();
