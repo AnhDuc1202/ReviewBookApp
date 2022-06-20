@@ -252,10 +252,10 @@ namespace ReviewBook.API.Controllers
             if (String.IsNullOrEmpty(p.BookName))
                 return Problem("BookName không được để trống",
                     statusCode: (int)HttpStatusCode.BadRequest);
-            if (String.IsNullOrEmpty(p.NewAut) && p.ID_Aut != null)
+            if (String.IsNullOrEmpty(p.NewAut) && p.ID_Aut == null)
                 return Problem("Bạn chưa điền thông tin tác giả",
                     statusCode: (int)HttpStatusCode.BadRequest);
-            if (String.IsNullOrEmpty(p.NewPub) && p.ID_Pub != null)
+            if (String.IsNullOrEmpty(p.NewPub) && p.ID_Pub == null)
                 return Problem("Bạn chưa điền thông tin nhà xuất bản",
                     statusCode: (int)HttpStatusCode.BadRequest);
             var newPropose = _BookService.CreatePropose(p);
