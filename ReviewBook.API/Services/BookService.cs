@@ -59,9 +59,9 @@ namespace ReviewBook.API.Services
                 {
                     Publisher a = new Publisher();
                     a.Name = propose.NewPub;
-                    book.ID_Aut = _publisherService.CreatePublisher(a).ID;
+                    book.ID_Pub = _publisherService.CreatePublisher(a).ID;
                 }
-                else book.ID_Aut = Int32.Parse(pub.ToString());
+                else book.ID_Pub = Int32.Parse(pub.ToString());
             }
             var newBook = CreateBook(book);
             var tags = propose.Tags;
