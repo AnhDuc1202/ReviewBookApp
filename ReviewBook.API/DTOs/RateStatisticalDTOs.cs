@@ -10,10 +10,12 @@ namespace ReviewBook.API.DTOs
             Name = b.Name;
             Picture = b.Picture;
             RateAvg = rateAvg;
+            stageNameAuthor = b.author.Stage_Name;
         }
 
         public int ID_Book { get; set; }
         public string Name { get; set; }
+        public string? stageNameAuthor { get; set; }
         public byte[]? Picture { get; set; }
         public double RateAvg { get; set; }
 

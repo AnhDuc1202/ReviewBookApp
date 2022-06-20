@@ -8,12 +8,14 @@ namespace ReviewBook.API.DTOs
         {
             ID_Book = b.Id;
             Name = b.Name;
+            stageNameAuthor = b.author.Stage_Name;
             Picture = b.Picture;
             reviewCount = r;
         }
 
         public int ID_Book { get; set; }
         public string Name { get; set; }
+        public string? stageNameAuthor { get; set; }
         public byte[]? Picture { get; set; }
         public long reviewCount { get; set; }
     }
